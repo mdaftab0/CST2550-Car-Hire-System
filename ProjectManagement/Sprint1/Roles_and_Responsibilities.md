@@ -1,37 +1,38 @@
 # Team Roles and Responsibilities
-Inspire Car Hire Management System
 
 ## Team Leader (Scrum Master)
-- Manage project progress
-- Assign tasks to team members
-- Monitor sprint completion
-- Ensure system design is correct
-- Coordinate communication between team members
+- Review work and approve design
+- Ensure BST is used correctly
+- Oversee system integration
+- Manage sprint progress
 
-## Secretary (GitHub Manager)
-- Maintain the GitHub repository
-- Upload documents and updates
-- Record meeting minutes
-- Organize project folders
+## Secretary
+- Maintain GitHub repository
+- Upload documents
+- Write meeting minutes
+- Organize project structure
 
 ## Developer 1
-- Design and implement Binary Search Tree
-- Create BSTNode and BinarySearchTree classes
-- Implement Insert, Search, Delete operations
+- Design Binary Search Tree structure
+- Write pseudo code for Insert
+- Write pseudo code for Search
+- Write pseudo code for Delete
 
 ## Developer 2
-- Design and implement Car class
-- Develop main menu system
-- Implement role-based functionality
-
-## Tester
-- Create test cases
-- Test BST operations
-- Verify system functionality
-- Document testing results
+- Design Car class
+- Decide car attributes
+- Plan menu interaction with system
 
 ## Support Developer
-- Assist developers in coding tasks
-- Help with debugging
-- Improve documentation formatting
-- Support testing activities
+- Help format pseudo code
+- Assist developers during implementation
+- Help implement hire and return logic
+
+## Tester
+- Prepare test cases for Insert and Search
+- Test Add / Delete / Search operations
+- Test each role separately
+- Document testing results
+
+## Deadline
+Sprint 1 completion date: **10 March 2025**
