@@ -1,7 +1,12 @@
-# Sprint 1 – Design Phase
+# Sprint 1 – System Design Phase
+
+Sprint 1 focuses on planning and designing the Inspire Car Hire Management System before development begins.
+
+## Sprint Goal
+To complete the system design before starting implementation.
 
 ## System Roles
-The system will have three access roles:
+The system includes three types of users:
 
 ### Admin
 - Add new car
@@ -15,44 +20,16 @@ The system will have three access roles:
 
 ### Customer
 - View cars
-- Search car
-- 
-## Sprint Goal
-To complete the system design before starting implementation.
+- Search for cars
 
+## Design Documents Created
+During this sprint the following design documents were produced:
 
-## Tasks Assigned
+- BST_Design.md
+- Car_Design.md
+- Menu_System_Design.md
+- Roles_and_Responsibilities.md
+- Meeting_Minutes.md
 
-### Developer 1
-- Implement Design Binary Search Tree structure.
-- Write pseudo code for Insert operation.
-- Write pseudo code for Search operation.
-- Write pseudo code for Delete operation.
-
-### Developer 2
-- Implement , Design Car class.
-- Decide what attributes a Car should have.
-
-### Support Developer
-- Help format pseudo code.
-- Implement Hire logic
-- Implement Return logic
-- Implement deposit rule
-
-### Tester
-- Prepare simple test ideas for Insert and Search.
-- Test each role separately
-- Test Add/Delete/Search
-- Write basic testing approach
-
-### Secretary
-- Update documentation
-- Write meeting minutes
-
-### Team Leader
-- Review work and approve design.
-- Ensure BST is used correctly
-- Oversee integration
-
-Deadline: [10 march 2025]
-
+## Sprint Outcome
+The core architecture and system structure have been designed.  
