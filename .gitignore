@@ -1,0 +1,15 @@
+# .NET build output
+bin/
+obj/
+
+# IDE files
+.vs/
+.idea/
+*.user
+*.suo
+
+# Mac junk
+.DS_Store
+
+# Don't commit local dev settings
+appsettings.Development.json
