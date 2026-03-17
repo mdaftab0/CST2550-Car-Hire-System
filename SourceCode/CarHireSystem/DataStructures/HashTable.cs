@@ -49,4 +49,35 @@ public class HashTable
 
         return null;
     }
+
+    public void Remove(int id)
+    {
+        int index = GetBucket(id);
+        Node? current = _buckets[index];
+        Node? previous = null;
+        while (current != null)
+        {
+            if (current.Data.Id == id)
+            {
+                if (previous == null)
+                {
+                    _buckets[index] = current.Next;
+                    return;
+                }
+
+                if (previous != null)
+                {
+                    previous.Next = current.Next;
+                    return;
+
+                }
+            }
+            else
+            {
+                previous = current;
+                current = current.Next;
+            }
+        }
+    }
+    
 }
