@@ -3,6 +3,14 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 
+// Add DbContext
+builder.Services.AddDbContext<CarHireDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Add custom services
+builder.Services.AddScoped<SearchService>();
+builder.Services.AddScoped<BookingService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
