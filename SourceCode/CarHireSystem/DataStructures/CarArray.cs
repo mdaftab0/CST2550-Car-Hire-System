@@ -11,4 +11,15 @@ public class CarArray
         _items = new Car[10];
         _count = 0;
     }
+
+    public void Add(Car car)
+    {
+        _items[_count] = car;
+        _count++;
+    }
+
+    public Car Get(int index)
+    {
+        return _items[index];
+    }
 }
