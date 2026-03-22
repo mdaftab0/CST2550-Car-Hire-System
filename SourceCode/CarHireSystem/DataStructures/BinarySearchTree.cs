@@ -62,13 +62,13 @@ public class BinarySearchTree
         }
     }
 
-    public List<Car> SearchByPriceRange(decimal min, decimal max)
+    public CarArray SearchByPriceRange(decimal min, decimal max)
     {
-        List<Car> results = new List<Car>();
+        CarArray results = new CarArray();
         SearchRecursive(_root, min, max, results);
         return results;
     }
-    private void SearchRecursive(Node? node, decimal min, decimal max, List<Car> results)
+    private void SearchRecursive(Node? node, decimal min, decimal max, CarArray results)
     {
         if (node == null)
         {
