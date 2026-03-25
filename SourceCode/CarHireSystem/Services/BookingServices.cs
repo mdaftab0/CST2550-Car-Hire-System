@@ -10,4 +10,24 @@ public class BookingService
     {
         _hashTable = hashTable;
     }
+
+    public void CreateBooking(Booking booking)
+    {
+        _hashTable.Insert(booking);
+    }
+
+    public Booking? GetBooking(int bookingId)
+    {
+        return _hashTable.GetById(bookingId);
+    }
+
+    public void ReturnCar(int bookingId, Car car)
+    {
+        Booking? booking = _hashTable.GetById(bookingId);
+        if (booking != null)
+        {
+            booking.Booked = false;
+            car.IsAvailable = true;
+        }
+    }
 }
