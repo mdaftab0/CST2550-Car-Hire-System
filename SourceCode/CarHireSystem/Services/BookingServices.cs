@@ -1,7 +1,13 @@
 using CarHireSystem.Models;
-namespace CarHireSystem.DataStructures;
+using CarHireSystem.DataStructures;
+namespace CarHireSystem.Services;
 
-public class BookingServices
+public class BookingService
 {
-    private Node
+    private HashTable _hashTable;
+
+    public BookingService(HashTable hashTable)
+    {
+        _hashTable = hashTable;
+    }
 }

@@ -7,4 +7,9 @@ public class SearchService
     public SearchService(BinarySearchTree bst){
         _bst = bst;
     }
+
+    public CarArray SearchByPriceRange(decimal min, decimal max)
+    {
+        return _bst.SearchByPriceRange(min, max);
+    }
 }

@@ -1,17 +1,16 @@
 using CarHireSystem.Models;
 namespace CarHireSystem.DataStructures;
 
-
 public class HashTable
 {
     private class Node
     {
-        public Car Data;
+        public Booking Data;
         public Node? Next;
 
-        public Node(Car car)
+        public Node(Booking booking)
         {
-            Data = car;
+            Data = booking;
             Next = null;
         }
     }
@@ -23,21 +22,21 @@ public class HashTable
         return id % 16;
     }
 
-    public void Insert(Car car)
+    public void Insert(Booking booking)
     {
-        int index = GetBucket(car.Id);
-        Node newNode = new Node(car);
+        int index = GetBucket(booking.BookingID);
+        Node newNode = new Node(booking);
         newNode.Next = _buckets[index];
         _buckets[index] = newNode;
     }
 
-    public Car? GetById(int id)
+    public Booking? GetById(int id)
     {
         int index = GetBucket(id);
         Node? current = _buckets[index];
         while (current != null)
         {
-            if (current.Data.Id == id)
+            if (current.Data.BookingID == id)
             {
                 return current.Data;
             }
@@ -46,7 +45,6 @@ public class HashTable
                 current = current.Next;
             }
         }
-
         return null;
     }
 
@@ -57,19 +55,17 @@ public class HashTable
         Node? previous = null;
         while (current != null)
         {
-            if (current.Data.Id == id)
+            if (current.Data.BookingID == id)
             {
                 if (previous == null)
                 {
                     _buckets[index] = current.Next;
                     return;
                 }
-
                 if (previous != null)
                 {
                     previous.Next = current.Next;
                     return;
-
                 }
             }
             else
@@ -79,5 +75,4 @@ public class HashTable
             }
         }
     }
-    
 }
