@@ -1,0 +1,19 @@
+@page
+@model CarHireSystem.Pages.ReturnsModel
+
+<h2>Return a Car</h2>
+
+<form method="post">
+    <label>Booking ID: <input type="number" name="BookingId" /></label><br/>
+    <button type="submit">Return</button>
+</form>
+
+@if (Model.SuccessMessage != null)
+{
+    <p style="color:green">@Model.SuccessMessage</p>
+}
+
+@if (Model.ErrorMessage != null)
+{
+    <p style="color:red">@Model.ErrorMessage</p>
+}
