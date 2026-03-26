@@ -18,6 +18,8 @@ public class CarArray
         _count++;
     }
 
+	public int Count => _count;
+
     public Car Get(int index)
     {
         return _items[index];
