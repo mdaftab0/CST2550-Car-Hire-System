@@ -1,0 +1,31 @@
+@page
+@model CarHireSystem.Pages.SearchModel
+
+<h2>Search Cars</h2>
+
+<form method="post">
+    <label>Min Price: <input type="number" name="MinPrice" /></label>
+    <label>Max Price: <input type="number" name="MaxPrice" /></label>
+    <button type="submit">Search</button>
+</form>
+
+@if (Model.Results != null)
+{
+    <table>
+        <tr>
+            <th>ID</th><th>Make</th><th>Model</th><th>Price/Day</th><th>Seats</th><th>Available</th>
+        </tr>
+        @for (int i = 0; i < Model.Results.Count; i++)
+        {
+            var car = Model.Results.Get(i);
+            <tr>
+                <td>@car.Id</td>
+                <td>@car.Make</td>
+                <td>@car.Model</td>
+                <td>@car.PricePerDay</td>
+                <td>@car.Seats</td>
+                <td>@car.IsAvailable</td>
+            </tr>
+        }
+    </table>
+}
