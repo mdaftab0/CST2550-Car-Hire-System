@@ -1,31 +1,66 @@
 @page
 @model CarHireSystem.Pages.SearchModel
 
-<h2>Search Cars</h2>
+<div class="section-hero">
+    <div class="container text-center">
+        <h1 class="fw-700 mb-2" style="font-size:2.2rem">Find Your Perfect Car</h1>
+        <p class="mb-0" style="color:#ccc">Search our fleet by daily price range</p>
+    </div>
+</div>
 
-<form method="post">
-    <label>Min Price: <input type="number" name="MinPrice" /></label>
-    <label>Max Price: <input type="number" name="MaxPrice" /></label>
-    <button type="submit">Search</button>
-</form>
+<div class="container">
+    <div class="row justify-content-center mb-5">
+        <div class="col-md-8">
+            <div class="card p-4">
+                <h5 class="fw-600 mb-3">Search by Price</h5>
+                <form method="post">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-4">
+                            <label class="form-label fw-500">Min Price (£/day)</label>
+                            <input type="number" name="MinPrice" class="form-control" placeholder="e.g. 20" />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-500">Max Price (£/day)</label>
+                            <input type="number" name="MaxPrice" class="form-control" placeholder="e.g. 100" />
+                        </div>
+                        <div class="col-md-4">
+                            <button type="submit" class="btn btn-primary w-100">Search Cars</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
-@if (Model.Results != null)
-{
-    <table>
-        <tr>
-            <th>ID</th><th>Make</th><th>Model</th><th>Price/Day</th><th>Seats</th><th>Available</th>
-        </tr>
-        @for (int i = 0; i < Model.Results.Count; i++)
-        {
-            var car = Model.Results.Get(i);
-            <tr>
-                <td>@car.Id</td>
-                <td>@car.Make</td>
-                <td>@car.Model</td>
-                <td>@car.PricePerDay</td>
-                <td>@car.Seats</td>
-                <td>@car.IsAvailable</td>
-            </tr>
-        }
-    </table>
-}
+    @if (Model.Results != null)
+    {
+        <h5 class="fw-600 mb-3">@Model.Results.Count car(s) found</h5>
+        <div class="row g-4">
+            @for (int i = 0; i < Model.Results.Count; i++)
+            {
+                var car = Model.Results.Get(i);
+                <div class="col-md-4">
+                    <div class="card p-4">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h5 class="fw-700 mb-0">@car.Make @car.Model</h5>
+                            @if (car.IsAvailable)
+                            {
+                                <span class="badge-available">Available</span>
+                            }
+                            else
+                            {
+                                <span class="badge-unavailable">Unavailable</span>
+                            }
+                        </div>
+                        <p class="text-muted mb-1" style="font-size:0.85rem">Reg: @car.Registration</p>
+                        <p class="text-muted mb-3" style="font-size:0.85rem">@car.Seats seats</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fw-700" style="font-size:1.3rem; color:#e63946">£@car.PricePerDay<span style="font-size:0.8rem; color:#999">/day</span></span>
+                            <a href="/Booking?carId=@car.Id" class="btn btn-primary btn-sm">Book Now</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
