@@ -1,10 +1,60 @@
-﻿@page
+@page
 @model IndexModel
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = "Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<!-- Hero -->
+<div class="section-hero" style="padding: 80px 0 72px;">
+    <div class="container text-center">
+        <h1 class="fw-bold mb-3" style="font-size:2.8rem; letter-spacing:-0.03em">
+            Drive Away Today<br/>with <span style="opacity:0.65; font-weight:400">Easy</span><span>Hire</span>
+        </h1>
+        <p class="mb-4" style="font-size:1.1rem; max-width:480px; margin:0 auto 24px;">
+            Premium vehicles at everyday prices &mdash; search, book and go in minutes.
+        </p>
+        <div class="d-flex gap-3 justify-content-center flex-wrap">
+            <a asp-page="/Search" class="btn btn-primary btn-lg px-5">Search Cars</a>
+            <a asp-page="/Booking" class="btn btn-outline-light btn-lg px-5">Make a Booking</a>
+        </div>
+    </div>
+</div>
+
+<!-- Feature cards -->
+<div class="container mb-5">
+    <div class="row g-4 justify-content-center">
+        <div class="col-md-4">
+            <div class="card p-4 h-100" style="border-top: 3px solid var(--eh-navy);">
+                <div class="mb-3" style="font-size:1.8rem">&#128269;</div>
+                <h5 class="fw-semibold mb-2">Search &amp; Filter</h5>
+                <p class="text-muted mb-3" style="font-size:0.9rem">Browse our full fleet and filter by daily price to find a car that fits your budget.</p>
+                <a asp-page="/Search" class="btn btn-outline-primary btn-sm mt-auto">Browse Fleet</a>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card p-4 h-100" style="border-top: 3px solid var(--eh-navy);">
+                <div class="mb-3" style="font-size:1.8rem">&#128203;</div>
+                <h5 class="fw-semibold mb-2">Instant Booking</h5>
+                <p class="text-muted mb-3" style="font-size:0.9rem">Reserve your vehicle in seconds. Receive a booking ID and you&apos;re ready to go.</p>
+                <a asp-page="/Booking" class="btn btn-outline-primary btn-sm mt-auto">Book Now</a>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card p-4 h-100" style="border-top: 3px solid var(--eh-navy);">
+                <div class="mb-3" style="font-size:1.8rem">&#128663;</div>
+                <h5 class="fw-semibold mb-2">Easy Returns</h5>
+                <p class="text-muted mb-3" style="font-size:0.9rem">Returning your hire car is just as simple &mdash; enter your booking ID and you&apos;re done.</p>
+                <a asp-page="/Returns" class="btn btn-outline-primary btn-sm mt-auto">Return a Car</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Call-to-action strip -->
+<div style="background: var(--eh-navy); padding: 48px 0; margin-bottom: 0;">
+    <div class="container text-center">
+        <h3 class="fw-bold text-white mb-2">Ready to hire?</h3>
+        <p style="color: rgba(255,255,255,0.65); margin-bottom: 24px;">Find your perfect car from our available fleet right now.</p>
+        <a asp-page="/Search" class="btn btn-primary btn-lg px-5">Find a Car</a>
+    </div>
 </div>

@@ -3,8 +3,8 @@
 
 <div class="section-hero">
     <div class="container text-center">
-        <h1 class="fw-700 mb-2" style="font-size:2.2rem">Book a Car</h1>
-        <p class="mb-0" style="color:#ccc">Fill in your details to confirm your reservation</p>
+        <h1 class="fw-bold mb-2" style="font-size:2.2rem">Book a Car</h1>
+        <p class="mb-0">Fill in your details to confirm your reservation</p>
     </div>
 </div>
 
@@ -14,24 +14,24 @@
 
             @if (Model.Confirmation != null)
             {
-                <div class="card p-4 mb-4" style="border-left: 4px solid #28a745;">
-                    <h5 class="fw-700 text-success mb-3">✓ Booking Confirmed</h5>
+                <div class="card p-4 mb-4" style="border-left: 4px solid #16a34a;">
+                    <h5 class="fw-bold text-success mb-3">&#10003; Booking Confirmed</h5>
                     <div class="row">
                         <div class="col-6">
                             <p class="text-muted mb-1" style="font-size:0.85rem">Booking ID</p>
-                            <p class="fw-700">#@Model.Confirmation.BookingID</p>
+                            <p class="fw-bold">#@Model.Confirmation.BookingID</p>
                         </div>
                         <div class="col-6">
                             <p class="text-muted mb-1" style="font-size:0.85rem">Total Cost</p>
-                            <p class="fw-700" style="color:#e63946">£@Model.Confirmation.TotalCost</p>
+                            <p class="price-accent" style="font-size:1.1rem">£@Model.Confirmation.TotalCost</p>
                         </div>
                         <div class="col-6">
                             <p class="text-muted mb-1" style="font-size:0.85rem">Customer</p>
-                            <p class="fw-600">@Model.Confirmation.CustomerName</p>
+                            <p class="fw-semibold">@Model.Confirmation.CustomerName</p>
                         </div>
                         <div class="col-6">
                             <p class="text-muted mb-1" style="font-size:0.85rem">Dates</p>
-                            <p class="fw-600">@Model.Confirmation.StartDate.ToString("dd MMM") – @Model.Confirmation.EndDate.ToString("dd MMM yyyy")</p>
+                            <p class="fw-semibold">@Model.Confirmation.StartDate.ToString("dd MMM") &ndash; @Model.Confirmation.EndDate.ToString("dd MMM yyyy")</p>
                         </div>
                     </div>
                     <p class="text-muted mt-2 mb-0" style="font-size:0.85rem">Please save your Booking ID to return the car later.</p>
@@ -44,39 +44,39 @@
             }
 
             <div class="card p-4">
-                <h5 class="fw-600 mb-4">Reservation Details</h5>
+                <h5 class="fw-semibold mb-4">Reservation Details</h5>
                 <form method="post">
                     <div class="mb-3">
-                        <label class="form-label fw-500">Car ID</label>
+                        <label class="form-label">Car ID</label>
                         <input type="number" name="CarId" class="form-control" placeholder="Enter Car ID from search results" />
                     </div>
-                    <hr/>
-                    <h6 class="fw-600 mb-3">Your Details</h6>
+                    <hr style="border-color: var(--eh-border);" />
+                    <h6 class="fw-semibold mb-3">Your Details</h6>
                     <div class="mb-3">
-                        <label class="form-label fw-500">Full Name</label>
+                        <label class="form-label">Full Name</label>
                         <input type="text" name="CustomerName" class="form-control" placeholder="John Smith" />
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-500">Email Address</label>
+                        <label class="form-label">Email Address</label>
                         <input type="text" name="CustomerEmail" class="form-control" placeholder="john@example.com" />
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-500">Phone Number</label>
+                        <label class="form-label">Phone Number</label>
                         <input type="text" name="CustomerPhone" class="form-control" placeholder="07700 000000" />
                     </div>
-                    <hr/>
-                    <h6 class="fw-600 mb-3">Hire Period</h6>
+                    <hr style="border-color: var(--eh-border);" />
+                    <h6 class="fw-semibold mb-3">Hire Period</h6>
                     <div class="row g-3 mb-4">
                         <div class="col-6">
-                            <label class="form-label fw-500">Start Date</label>
+                            <label class="form-label">Start Date</label>
                             <input type="date" name="StartDate" class="form-control" />
                         </div>
                         <div class="col-6">
-                            <label class="form-label fw-500">End Date</label>
+                            <label class="form-label">End Date</label>
                             <input type="date" name="EndDate" class="form-control" />
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary w-100 py-2">Confirm Booking</button>
+                    <button type="submit" class="btn btn-navy w-100 py-2">Confirm Booking</button>
                 </form>
             </div>
         </div>

@@ -1,5 +1,6 @@
-﻿/* Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
-for details on configuring this project to bundle and minify static web assets. */
+/* EasyHire — layout-scoped overrides
+   Global design tokens live in _Layout.cshtml <style> block.
+   This file handles structural/layout concerns only. */
 
 a.navbar-brand {
   white-space: normal;
@@ -8,30 +9,28 @@ a.navbar-brand {
 }
 
 a {
-  color: #0077cc;
+  color: #0f172a;
 }
 
-.btn-primary {
-  color: #fff;
-  background-color: #1b6ec2;
-  border-color: #1861ac;
+a:hover {
+  color: #1e293b;
 }
 
 .nav-pills .nav-link.active, .nav-pills .show > .nav-link {
-  color: #fff;
-  background-color: #1b6ec2;
-  border-color: #1861ac;
+  color: #ffffff;
+  background-color: #0f172a;
+  border-color: #0f172a;
 }
 
 .border-top {
-  border-top: 1px solid #e5e5e5;
+  border-top: 1px solid rgba(15, 23, 42, 0.12);
 }
 .border-bottom {
-  border-bottom: 1px solid #e5e5e5;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.12);
 }
 
 .box-shadow {
-  box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+  box-shadow: 0 .25rem .75rem rgba(15, 23, 42, 0.08);
 }
 
 button.accept-policy {

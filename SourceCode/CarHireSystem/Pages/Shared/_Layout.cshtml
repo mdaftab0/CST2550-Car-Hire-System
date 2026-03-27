@@ -1,38 +1,191 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - DriveEasy Car Hire</title>
+    <title>@ViewData["Title"] - EasyHire Car Hire</title>
     <script type="importmap"></script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/CarHireSystem.styles.css" asp-append-version="true" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background: #f8f9fa; }
-        .navbar-brand { font-weight: 700; font-size: 1.4rem; color: #1a1a2e !important; }
-        .navbar-brand span { color: #e63946; }
-        .nav-link { font-weight: 500; color: #333 !important; }
-        .nav-link:hover { color: #e63946 !important; }
-        .btn-primary { background: #e63946; border-color: #e63946; font-weight: 600; }
-        .btn-primary:hover { background: #c1121f; border-color: #c1121f; }
-        .btn-outline-primary { color: #e63946; border-color: #e63946; font-weight: 600; }
-        .btn-outline-primary:hover { background: #e63946; border-color: #e63946; }
-        .card { border: none; box-shadow: 0 2px 12px rgba(0,0,0,0.08); border-radius: 12px; }
-        .form-control:focus { border-color: #e63946; box-shadow: 0 0 0 0.2rem rgba(230,57,70,0.15); }
-        footer { background: #1a1a2e; color: #aaa; padding: 30px 0; margin-top: 60px; }
-        footer a { color: #e63946; text-decoration: none; }
-        .section-hero { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: white; padding: 60px 0; margin-bottom: 40px; }
-        .badge-available { background: #d4edda; color: #155724; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
-        .badge-unavailable { background: #f8d7da; color: #721c24; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+        :root {
+            --eh-navy:      #0f172a;
+            --eh-navy-mid:  #1e293b;
+            --eh-navy-dark: #070f1e;
+            --eh-white:     #ffffff;
+            --eh-off-white: #f8fafc;
+            --eh-border:    rgba(15, 23, 42, 0.18);
+        }
+
+        /* ── Base ─────────────────────────────── */
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--eh-off-white);
+            color: var(--eh-navy);
+        }
+
+        /* ── Navbar ───────────────────────────── */
+        .navbar {
+            background: var(--eh-navy) !important;
+        }
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.4rem;
+            color: var(--eh-white) !important;
+            letter-spacing: -0.02em;
+        }
+        .navbar-brand span {
+            color: var(--eh-white);
+            opacity: 0.55;
+            font-weight: 400;
+        }
+        .nav-link {
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.78) !important;
+            transition: color 0.15s;
+        }
+        .nav-link:hover {
+            color: var(--eh-white) !important;
+        }
+        .navbar-toggler {
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+        .navbar-toggler-icon {
+            filter: invert(1);
+        }
+
+        /* ── Buttons ──────────────────────────── */
+        .btn-primary {
+            background: var(--eh-white);
+            border-color: var(--eh-white);
+            color: var(--eh-navy);
+            font-weight: 600;
+        }
+        .btn-primary:hover,
+        .btn-primary:focus,
+        .btn-primary:active {
+            background: #e2e8f0;
+            border-color: #e2e8f0;
+            color: var(--eh-navy);
+        }
+        .btn-outline-primary {
+            color: var(--eh-navy);
+            border-color: var(--eh-navy);
+            font-weight: 600;
+            background: transparent;
+        }
+        .btn-outline-primary:hover {
+            background: var(--eh-navy);
+            border-color: var(--eh-navy);
+            color: var(--eh-white);
+        }
+        /* solid navy button — use class="btn btn-navy" on light backgrounds */
+        .btn-navy {
+            background: var(--eh-navy);
+            border-color: var(--eh-navy);
+            color: var(--eh-white);
+            font-weight: 600;
+        }
+        .btn-navy:hover,
+        .btn-navy:focus {
+            background: var(--eh-navy-mid);
+            border-color: var(--eh-navy-mid);
+            color: var(--eh-white);
+        }
+
+        /* ── Cards ────────────────────────────── */
+        .card {
+            border: 1px solid var(--eh-border);
+            box-shadow: 0 2px 12px rgba(15, 23, 42, 0.06);
+            border-radius: 12px;
+            background: var(--eh-white);
+        }
+
+        /* ── Form inputs ──────────────────────── */
+        .form-control,
+        .form-select {
+            border-color: var(--eh-border);
+            background: var(--eh-white);
+            color: var(--eh-navy);
+        }
+        .form-control:focus,
+        .form-select:focus {
+            border-color: var(--eh-navy);
+            box-shadow: 0 0 0 0.2rem rgba(15, 23, 42, 0.14);
+            background: var(--eh-white);
+            color: var(--eh-navy);
+        }
+        .form-label {
+            color: var(--eh-navy);
+            font-weight: 500;
+        }
+
+        /* ── Hero sections ────────────────────── */
+        .section-hero {
+            background: linear-gradient(135deg, var(--eh-navy) 0%, var(--eh-navy-mid) 100%);
+            color: var(--eh-white);
+            padding: 64px 0;
+            margin-bottom: 40px;
+        }
+        .section-hero p {
+            color: rgba(255, 255, 255, 0.68);
+        }
+
+        /* ── Footer ───────────────────────────── */
+        footer {
+            background: var(--eh-navy-dark);
+            color: rgba(255, 255, 255, 0.58);
+            padding: 36px 0;
+            margin-top: 60px;
+        }
+        footer h6 {
+            color: var(--eh-white) !important;
+        }
+        footer a {
+            color: rgba(255, 255, 255, 0.72);
+            text-decoration: none;
+            transition: color 0.15s;
+        }
+        footer a:hover {
+            color: var(--eh-white);
+        }
+        footer hr {
+            border-color: rgba(255, 255, 255, 0.1);
+            margin-top: 24px;
+        }
+
+        /* ── Availability badges ──────────────── */
+        .badge-available {
+            background: #d1fae5;
+            color: #065f46;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .badge-unavailable {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* ── Utility helpers ──────────────────── */
+        .text-navy   { color: var(--eh-navy)  !important; }
+        .bg-navy     { background: var(--eh-navy) !important; }
+        .border-navy { border-color: var(--eh-navy) !important; }
+        .price-accent { color: var(--eh-navy); font-weight: 700; }
     </style>
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm bg-white border-bottom shadow-sm">
+        <nav class="navbar navbar-expand-sm shadow-sm">
             <div class="container">
-                <a class="navbar-brand" asp-area="" asp-page="/Index">Drive<span>Easy</span></a>
+                <a class="navbar-brand" asp-area="" asp-page="/Index">Easy<span>Hire</span></a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -68,12 +221,12 @@
     <footer>
         <div class="container">
             <div class="row">
-                <div class="col-md-4">
-                    <h6 class="text-white fw-700 mb-2">DriveEasy Car Hire</h6>
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <h6 class="fw-bold mb-2">EasyHire Car Hire</h6>
                     <p style="font-size:0.85rem">Premium vehicles at affordable prices. Available 24/7.</p>
                 </div>
-                <div class="col-md-4">
-                    <h6 class="text-white mb-2">Quick Links</h6>
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <h6 class="mb-2">Quick Links</h6>
                     <ul class="list-unstyled" style="font-size:0.85rem">
                         <li><a asp-page="/Search">Search Cars</a></li>
                         <li><a asp-page="/Booking">Make a Booking</a></li>
@@ -81,12 +234,12 @@
                     </ul>
                 </div>
                 <div class="col-md-4">
-                    <h6 class="text-white mb-2">Contact</h6>
-                    <p style="font-size:0.85rem">support@driveeasy.co.uk<br/>0800 123 4567</p>
+                    <h6 class="mb-2">Contact</h6>
+                    <p style="font-size:0.85rem">support@easyhire.co.uk<br/>0800 123 4567</p>
                 </div>
             </div>
-            <hr style="border-color:#333; margin-top:20px"/>
-            <p style="font-size:0.8rem; text-align:center">&copy; 2026 DriveEasy - <a asp-page="/Privacy">Privacy</a></p>
+            <hr />
+            <p style="font-size:0.8rem; text-align:center">&copy; 2026 EasyHire &mdash; <a asp-page="/Privacy">Privacy</a></p>
         </div>
     </footer>
 
