@@ -27,6 +27,8 @@ public class Booking
         TotalCost = (endDate - startDate).Days * pricePerDay;
     }
 
+	public Booking() { }
+	
     public override string ToString()
     {
         string status = Booked ? "Booked" : "Not Booked";
