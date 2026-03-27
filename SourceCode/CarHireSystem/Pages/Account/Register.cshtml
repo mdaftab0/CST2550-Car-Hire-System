@@ -1,0 +1,71 @@
+@page
+@model CarHireSystem.Pages.Account.RegisterModel
+@{
+    ViewData["Title"] = "Create Account";
+}
+
+<div class="section-hero">
+    <div class="container text-center">
+        <h1 class="fw-bold mb-2" style="font-size:2.2rem">Create Account</h1>
+        <p class="mb-0">Join EasyHire today</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+
+            @if (Model.ErrorMessages.Any())
+            {
+                <div class="alert alert-danger">
+                    <ul class="mb-0 ps-3">
+                        @foreach (var err in Model.ErrorMessages)
+                        {
+                            <li>@err</li>
+                        }
+                    </ul>
+                </div>
+            }
+
+            <div class="card p-4">
+                <h5 class="fw-semibold mb-4">New Account</h5>
+                <form method="post">
+                    <div class="mb-3">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" name="FullName" class="form-control" placeholder="John Smith"
+                               value="@Model.FullName" autocomplete="name" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" name="Email" class="form-control" placeholder="you@example.com"
+                               value="@Model.Email" autocomplete="email" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Phone Number</label>
+                        <input type="tel" name="PhoneNumber" class="form-control" placeholder="07700 000000"
+                               value="@Model.PhoneNumber" autocomplete="tel" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+                        <input type="password" name="Password" class="form-control" placeholder="••••••••"
+                               autocomplete="new-password" />
+                        <div class="form-text" style="color:#64748b">
+                            Min 8 characters &mdash; must include a digit and uppercase letter.
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label">Confirm Password</label>
+                        <input type="password" name="ConfirmPassword" class="form-control" placeholder="••••••••"
+                               autocomplete="new-password" />
+                    </div>
+                    <button type="submit" class="btn btn-navy w-100 py-2">Create Account</button>
+                </form>
+            </div>
+
+            <p class="text-center mt-3" style="font-size:0.9rem">
+                Already have an account?
+                <a asp-page="/Account/Login" class="fw-semibold text-navy">Sign in</a>
+            </p>
+        </div>
+    </div>
+</div>

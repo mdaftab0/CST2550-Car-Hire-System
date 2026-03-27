@@ -1,11 +1,13 @@
 using CarHireSystem.DataStructures;
 using CarHireSystem.Models;
 using CarHireSystem.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace CarHireSystem.Pages;
 
+[Authorize]
 public class BookingModel : PageModel
 {
     private readonly BookingService _bookingService;

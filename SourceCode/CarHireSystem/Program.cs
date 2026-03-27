@@ -2,16 +2,40 @@ using CarHireSystem.Database;
 using CarHireSystem.DataStructures;
 using CarHireSystem.Models;
 using CarHireSystem.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Database
 builder.Services.AddDbContext<CarHireDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// Identity
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+{
+    options.Password.RequiredLength = 8;
+    options.Password.RequireDigit = true;
+    options.Password.RequireUppercase = true;
+    options.Password.RequireLowercase = true;
+    options.Password.RequireNonAlphanumeric = false;
+    options.SignIn.RequireConfirmedAccount = false;
+})
+.AddEntityFrameworkStores<CarHireDbContext>()
+.AddDefaultTokenProviders();
+
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Account/Login";
+    options.LogoutPath = "/Account/Logout";
+    options.AccessDeniedPath = "/Account/Login";
+    options.SlidingExpiration = true;
+    options.ExpireTimeSpan = TimeSpan.FromDays(7);
+});
+
 builder.Services.AddRazorPages();
 
-// Create BST and HashTable
+// Custom data structure services
 var bst = new BinarySearchTree();
 var hashTable = new HashTable();
 
@@ -22,27 +46,51 @@ builder.Services.AddSingleton<BookingService>();
 
 var app = builder.Build();
 
-// Seed cars into DB and load into BST on startup
+// Seed data and Identity roles/admin on startup
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<CarHireDbContext>();
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
+    // Seed cars
     if (!db.Cars.Any())
     {
         db.Cars.AddRange(
-            new Car(1, "Toyota", "Corolla", "AB12CDE", 35.00m, 5),
-            new Car(2, "BMW", "X5", "XY99ZZZ", 95.00m, 5),
-            new Car(3, "Ford", "Fiesta", "FD21ABC", 28.00m, 5),
+            new Car(1, "Toyota",   "Corolla", "AB12CDE", 35.00m,  5),
+            new Car(2, "BMW",      "X5",      "XY99ZZZ", 95.00m,  5),
+            new Car(3, "Ford",     "Fiesta",  "FD21ABC", 28.00m,  5),
             new Car(4, "Mercedes", "C-Class", "MC55DEF", 120.00m, 5),
-            new Car(5, "Vauxhall", "Astra", "VA33GHI", 45.00m, 5)
+            new Car(5, "Vauxhall", "Astra",   "VA33GHI", 45.00m,  5)
         );
         db.SaveChanges();
     }
 
-    // Load all cars from DB into BST
+    // Load all cars into BST
     foreach (var car in db.Cars.ToList())
-    {
         bst.Insert(car);
+
+    // Seed roles
+    foreach (var role in new[] { "Admin", "Customer" })
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+            await roleManager.CreateAsync(new IdentityRole(role));
+    }
+
+    // Seed default admin account
+    const string adminEmail = "admin@easyhire.com";
+    if (await userManager.FindByEmailAsync(adminEmail) == null)
+    {
+        var admin = new ApplicationUser
+        {
+            UserName    = adminEmail,
+            Email       = adminEmail,
+            FullName    = "EasyHire Admin",
+            EmailConfirmed = true
+        };
+        var result = await userManager.CreateAsync(admin, "Admin123!");
+        if (result.Succeeded)
+            await userManager.AddToRoleAsync(admin, "Admin");
     }
 }
 
@@ -54,9 +102,9 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapStaticAssets();
-app.MapRazorPages()
-   .WithStaticAssets();
+app.MapRazorPages().WithStaticAssets();
 
 app.Run();

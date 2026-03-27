@@ -204,10 +204,32 @@
                             <a class="nav-link" asp-area="" asp-page="/Returns">Returns</a>
                         </li>
                     </ul>
-                    <ul class="navbar-nav">
+                    <ul class="navbar-nav align-items-center gap-2">
                         <li class="nav-item">
                             <a class="btn btn-primary btn-sm px-3" asp-area="" asp-page="/Search">Find a Car</a>
                         </li>
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <li class="nav-item">
+                                <span class="nav-link" style="font-size:0.85rem; color:rgba(255,255,255,0.6)!important; padding-right:0">
+                                    @User.Identity.Name
+                                </span>
+                            </li>
+                            <li class="nav-item">
+                                <form method="post" asp-page="/Account/Logout" style="margin:0">
+                                    <button type="submit" class="btn btn-outline-light btn-sm px-3">Sign Out</button>
+                                </form>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="btn btn-outline-light btn-sm px-3" asp-page="/Account/Login">Sign In</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="btn btn-primary btn-sm px-3" asp-page="/Account/Register">Register</a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>
