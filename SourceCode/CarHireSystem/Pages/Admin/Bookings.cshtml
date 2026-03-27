@@ -1,0 +1,86 @@
+@page
+@model CarHireSystem.Pages.Admin.BookingsModel
+@{
+    ViewData["Title"] = "All Bookings";
+}
+
+<div class="section-hero">
+    <div class="container">
+        <h1 class="fw-bold mb-1" style="font-size:2rem">Bookings</h1>
+        <p class="mb-0">All customer bookings from the database</p>
+    </div>
+</div>
+
+<div class="container">
+
+    <div class="card p-0 overflow-hidden">
+        <div class="p-4 border-bottom d-flex justify-content-between align-items-center"
+             style="border-color:var(--eh-border)!important">
+            <h5 class="fw-semibold mb-0">@Model.Bookings.Count booking(s)</h5>
+        </div>
+
+        @if (!Model.Bookings.Any())
+        {
+            <div class="p-5 text-center text-muted">No bookings yet.</div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table mb-0" style="font-size:0.88rem">
+                    <thead style="background:var(--eh-off-white)">
+                        <tr>
+                            <th class="px-4 py-3">Booking ID</th>
+                            <th class="py-3">Car</th>
+                            <th class="py-3">Customer</th>
+                            <th class="py-3">Contact</th>
+                            <th class="py-3">Start</th>
+                            <th class="py-3">End</th>
+                            <th class="py-3">Total</th>
+                            <th class="py-3">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var b in Model.Bookings)
+                        {
+                            var car = Model.CarsById.TryGetValue(b.CarID, out var c) ? c : null;
+                            <tr>
+                                <td class="px-4 py-3 fw-semibold">#@b.BookingID</td>
+                                <td class="py-3">
+                                    @if (car != null)
+                                    {
+                                        @car.Make @car.Model
+                                        <div class="text-muted" style="font-size:0.8rem">@car.Registration</div>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Car #@b.CarID</span>
+                                    }
+                                </td>
+                                <td class="py-3">
+                                    @b.CustomerName
+                                </td>
+                                <td class="py-3 text-muted" style="font-size:0.82rem">
+                                    @b.CustomerEmail<br/>@b.CustomerPhone
+                                </td>
+                                <td class="py-3 text-muted">@b.StartDate.ToString("dd MMM yyyy")</td>
+                                <td class="py-3 text-muted">@b.EndDate.ToString("dd MMM yyyy")</td>
+                                <td class="py-3 price-accent">£@b.TotalCost</td>
+                                <td class="py-3">
+                                    @if (b.Booked)
+                                    {
+                                        <span style="background:#fef3c7; color:#92400e; padding:3px 10px; border-radius:20px; font-size:0.75rem; font-weight:600">Active</span>
+                                    }
+                                    else
+                                    {
+                                        <span style="background:#f1f5f9; color:#64748b; padding:3px 10px; border-radius:20px; font-size:0.75rem; font-weight:600">Returned</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+
+</div>

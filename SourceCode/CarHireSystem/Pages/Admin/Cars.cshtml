@@ -1,0 +1,169 @@
+@page
+@model CarHireSystem.Pages.Admin.CarsModel
+@{
+    ViewData["Title"] = "Manage Cars";
+    var success = TempData["Success"] as string;
+    var error   = TempData["Error"]   as string;
+}
+
+<div class="section-hero">
+    <div class="container">
+        <h1 class="fw-bold mb-1" style="font-size:2rem">Fleet Management</h1>
+        <p class="mb-0">Add, edit or remove cars from the fleet</p>
+    </div>
+</div>
+
+<div class="container">
+
+    @if (success != null)
+    {
+        <div class="alert alert-success">&#10003; @success</div>
+    }
+    @if (error != null)
+    {
+        <div class="alert alert-danger">@error</div>
+    }
+    @if (Model.ErrorMessage != null)
+    {
+        <div class="alert alert-danger">@Model.ErrorMessage</div>
+    }
+
+    <!-- Add New Car -->
+    <div class="card p-4 mb-4">
+        <h5 class="fw-semibold mb-4">Add New Car</h5>
+        <form method="post" asp-page-handler="Add">
+            <div class="row g-3">
+                <div class="col-md-2">
+                    <label class="form-label">Make</label>
+                    <input type="text" name="NewMake" class="form-control" placeholder="Toyota" />
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Model</label>
+                    <input type="text" name="NewModel" class="form-control" placeholder="Corolla" />
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Registration</label>
+                    <input type="text" name="NewRegistration" class="form-control" placeholder="AB12CDE" />
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Price / Day (£)</label>
+                    <input type="number" name="NewPricePerDay" class="form-control" placeholder="50.00" step="0.01" min="1" />
+                </div>
+                <div class="col-md-1">
+                    <label class="form-label">Seats</label>
+                    <input type="number" name="NewSeats" class="form-control" placeholder="5" min="1" max="9" />
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-navy w-100">Add Car</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Cars Table -->
+    <div class="card p-0 overflow-hidden">
+        <div class="p-4 border-bottom" style="border-color:var(--eh-border)!important">
+            <h5 class="fw-semibold mb-0">Fleet (@Model.Cars.Count cars)</h5>
+        </div>
+        <div class="table-responsive">
+            <table class="table mb-0" style="font-size:0.9rem">
+                <thead style="background:var(--eh-off-white)">
+                    <tr>
+                        <th class="px-4 py-3">ID</th>
+                        <th class="py-3">Make / Model</th>
+                        <th class="py-3">Registration</th>
+                        <th class="py-3">Price/Day</th>
+                        <th class="py-3">Seats</th>
+                        <th class="py-3">Status</th>
+                        <th class="py-3">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var car in Model.Cars)
+                    {
+                        <tr>
+                            <td class="px-4 py-3 text-muted">#@car.Id</td>
+                            <td class="py-3 fw-semibold">@car.Make @car.Model</td>
+                            <td class="py-3 text-muted">@car.Registration</td>
+                            <td class="py-3 price-accent">£@car.PricePerDay</td>
+                            <td class="py-3 text-muted">@car.Seats</td>
+                            <td class="py-3">
+                                @if (car.IsAvailable)
+                                {
+                                    <span class="badge-available">Available</span>
+                                }
+                                else
+                                {
+                                    <span class="badge-unavailable">Unavailable</span>
+                                }
+                            </td>
+                            <td class="py-3">
+                                <a asp-page="/Admin/Cars" asp-route-editId="@car.Id"
+                                   class="btn btn-outline-primary btn-sm me-1">Edit</a>
+                                <form method="post" asp-page-handler="Delete" style="display:inline"
+                                      onsubmit="return confirm('Delete @car.Make @car.Model?')">
+                                    <input type="hidden" name="carId" value="@car.Id" />
+                                    <button type="submit" class="btn btn-sm"
+                                            style="border:1px solid #dc2626; color:#dc2626; background:transparent">
+                                        Delete
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+
+                        @* Inline edit row *@
+                        @if (Model.ActiveEditId == car.Id)
+                        {
+                            <tr style="background:#f0f4ff">
+                                <td colspan="7" class="p-4">
+                                    <h6 class="fw-semibold mb-3">Editing: @car.Make @car.Model</h6>
+                                    <form method="post" asp-page-handler="Edit">
+                                        <input type="hidden" name="EditId" value="@car.Id" />
+                                        <div class="row g-3">
+                                            <div class="col-md-2">
+                                                <label class="form-label">Make</label>
+                                                <input type="text" name="EditMake" class="form-control" value="@car.Make" />
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label class="form-label">Model</label>
+                                                <input type="text" name="EditModel" class="form-control" value="@car.Model" />
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label class="form-label">Registration</label>
+                                                <input type="text" name="EditRegistration" class="form-control" value="@car.Registration" />
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label class="form-label">Price / Day (£)</label>
+                                                <input type="number" name="EditPricePerDay" class="form-control"
+                                                       value="@car.PricePerDay" step="0.01" min="1" />
+                                            </div>
+                                            <div class="col-md-1">
+                                                <label class="form-label">Seats</label>
+                                                <input type="number" name="EditSeats" class="form-control"
+                                                       value="@car.Seats" min="1" max="9" />
+                                            </div>
+                                            <div class="col-md-1 d-flex flex-column justify-content-end">
+                                                <div class="form-check mb-2">
+                                                    <input type="checkbox" name="EditIsAvailable" class="form-check-input"
+                                                           id="avail_@car.Id" value="true"
+                                                           @(car.IsAvailable ? "checked" : "") />
+                                                    <label class="form-check-label" for="avail_@car.Id">Available</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2 d-flex align-items-end gap-2">
+                                                <button type="submit" class="btn btn-navy btn-sm px-3">Save</button>
+                                                <a asp-page="/Admin/Cars" class="btn btn-sm"
+                                                   style="border:1px solid var(--eh-border); color:var(--eh-navy)">Cancel</a>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>

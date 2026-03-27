@@ -1,0 +1,124 @@
+using CarHireSystem.Database;
+using CarHireSystem.DataStructures;
+using CarHireSystem.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
+
+namespace CarHireSystem.Pages.Admin;
+
+[Authorize(Roles = "Admin")]
+public class CarsModel : PageModel
+{
+    private readonly CarHireDbContext _db;
+    private readonly BinarySearchTree _bst;
+
+    public CarsModel(CarHireDbContext db, BinarySearchTree bst)
+    {
+        _db = db;
+        _bst = bst;
+    }
+
+    // ── Page state ────────────────────────────────────────────
+    public List<Car> Cars { get; set; } = new();
+    public string? ErrorMessage { get; set; }
+    public string? SuccessMessage { get; set; }
+
+    // ── Add car fields ────────────────────────────────────────
+    [BindProperty] public string NewMake { get; set; } = "";
+    [BindProperty] public string NewModel { get; set; } = "";
+    [BindProperty] public string NewRegistration { get; set; } = "";
+    [BindProperty] public decimal NewPricePerDay { get; set; }
+    [BindProperty] public int NewSeats { get; set; }
+
+    // ── Edit car fields ───────────────────────────────────────
+    [BindProperty] public int EditId { get; set; }
+    [BindProperty] public string EditMake { get; set; } = "";
+    [BindProperty] public string EditModel { get; set; } = "";
+    [BindProperty] public string EditRegistration { get; set; } = "";
+    [BindProperty] public decimal EditPricePerDay { get; set; }
+    [BindProperty] public int EditSeats { get; set; }
+    [BindProperty] public bool EditIsAvailable { get; set; }
+
+    // ID of the car currently being edited (from query string)
+    public int? ActiveEditId { get; set; }
+
+    // ── Handlers ──────────────────────────────────────────────
+    public async Task OnGetAsync(int? editId)
+    {
+        ActiveEditId = editId;
+        Cars = await _db.Cars.OrderBy(c => c.Id).ToListAsync();
+    }
+
+    public async Task<IActionResult> OnPostAddAsync()
+    {
+        if (string.IsNullOrWhiteSpace(NewMake) || string.IsNullOrWhiteSpace(NewModel)
+            || string.IsNullOrWhiteSpace(NewRegistration) || NewPricePerDay <= 0 || NewSeats <= 0)
+        {
+            ErrorMessage = "All fields are required and price/seats must be greater than zero.";
+            Cars = await _db.Cars.OrderBy(c => c.Id).ToListAsync();
+            return Page();
+        }
+
+        int nextId = _db.Cars.Any() ? _db.Cars.Max(c => c.Id) + 1 : 1;
+
+        var car = new Car(nextId, NewMake, NewModel, NewRegistration, NewPricePerDay, NewSeats);
+        car.Model = NewModel;
+
+        _db.Cars.Add(car);
+        await _db.SaveChangesAsync();
+        _bst.Insert(car);
+
+        TempData["Success"] = $"{NewMake} {NewModel} added successfully.";
+        return RedirectToPage();
+    }
+
+    public async Task<IActionResult> OnPostEditAsync()
+    {
+        var car = await _db.Cars.FindAsync(EditId);
+        if (car == null)
+        {
+            TempData["Error"] = "Car not found.";
+            return RedirectToPage();
+        }
+
+        car.Make         = EditMake;
+        car.Model        = EditModel;
+        car.Registration = EditRegistration;
+        car.PricePerDay  = EditPricePerDay;
+        car.Seats        = EditSeats;
+        car.IsAvailable  = EditIsAvailable;
+
+        await _db.SaveChangesAsync();
+
+        // Rebuild BST to reflect updated price ordering
+        _bst.Clear();
+        foreach (var c in await _db.Cars.ToListAsync())
+            _bst.Insert(c);
+
+        TempData["Success"] = $"{car.Make} {car.Model} updated successfully.";
+        return RedirectToPage();
+    }
+
+    public async Task<IActionResult> OnPostDeleteAsync(int carId)
+    {
+        var car = await _db.Cars.FindAsync(carId);
+        if (car == null)
+        {
+            TempData["Error"] = "Car not found.";
+            return RedirectToPage();
+        }
+
+        _db.Cars.Remove(car);
+        await _db.SaveChangesAsync();
+
+        // Rebuild BST without the deleted car
+        _bst.Clear();
+        foreach (var c in await _db.Cars.ToListAsync())
+            _bst.Insert(c);
+
+        TempData["Success"] = $"{car.Make} {car.Model} deleted.";
+        return RedirectToPage();
+    }
+}

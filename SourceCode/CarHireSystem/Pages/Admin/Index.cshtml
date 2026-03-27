@@ -1,0 +1,62 @@
+@page
+@model CarHireSystem.Pages.Admin.IndexModel
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="section-hero">
+    <div class="container">
+        <h1 class="fw-bold mb-1" style="font-size:2rem">Admin Dashboard</h1>
+        <p class="mb-0">EasyHire management overview</p>
+    </div>
+</div>
+
+<div class="container">
+
+    <!-- Stat cards -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-3">
+            <div class="card p-4 text-center" style="border-top: 3px solid var(--eh-navy);">
+                <div class="fw-bold mb-1" style="font-size:2.2rem; color:var(--eh-navy)">@Model.TotalCars</div>
+                <div class="text-muted" style="font-size:0.9rem">Total Cars</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card p-4 text-center" style="border-top: 3px solid #16a34a;">
+                <div class="fw-bold mb-1" style="font-size:2.2rem; color:#16a34a">@Model.AvailableCars</div>
+                <div class="text-muted" style="font-size:0.9rem">Available Cars</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card p-4 text-center" style="border-top: 3px solid var(--eh-navy);">
+                <div class="fw-bold mb-1" style="font-size:2.2rem; color:var(--eh-navy)">@Model.TotalBookings</div>
+                <div class="text-muted" style="font-size:0.9rem">Total Bookings</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card p-4 text-center" style="border-top: 3px solid #d97706;">
+                <div class="fw-bold mb-1" style="font-size:2.2rem; color:#d97706">@Model.ActiveBookings</div>
+                <div class="text-muted" style="font-size:0.9rem">Active Bookings</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick links -->
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card p-4">
+                <h5 class="fw-semibold mb-2">Fleet Management</h5>
+                <p class="text-muted mb-3" style="font-size:0.9rem">Add, edit or remove cars from the fleet.</p>
+                <a asp-page="/Admin/Cars" class="btn btn-navy btn-sm px-4">Manage Cars</a>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card p-4">
+                <h5 class="fw-semibold mb-2">Bookings</h5>
+                <p class="text-muted mb-3" style="font-size:0.9rem">View all customer bookings and their status.</p>
+                <a asp-page="/Admin/Bookings" class="btn btn-navy btn-sm px-4">View Bookings</a>
+            </div>
+        </div>
+    </div>
+
+</div>

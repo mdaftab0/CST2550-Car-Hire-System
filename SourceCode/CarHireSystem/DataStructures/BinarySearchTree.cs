@@ -62,6 +62,11 @@ public class BinarySearchTree
         }
     }
 
+    public void Clear()
+    {
+        _root = null;
+    }
+
     public CarArray SearchByPriceRange(decimal min, decimal max)
     {
         CarArray results = new CarArray();
