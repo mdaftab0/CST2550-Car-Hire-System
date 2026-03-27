@@ -29,35 +29,60 @@
 
             <div class="card p-4">
                 <h5 class="fw-semibold mb-4">New Account</h5>
-                <form method="post">
+                <form method="post" id="registerForm">
                     <div class="mb-3">
                         <label class="form-label">Full Name</label>
                         <input type="text" name="FullName" class="form-control" placeholder="John Smith"
                                value="@Model.FullName" autocomplete="name" />
                     </div>
+
+                    <!-- Email with live format feedback -->
                     <div class="mb-3">
                         <label class="form-label">Email Address</label>
-                        <input type="email" name="Email" class="form-control" placeholder="you@example.com"
-                               value="@Model.Email" autocomplete="email" />
+                        <input type="email" id="emailInput" name="Email" class="form-control"
+                               placeholder="you@example.com" value="@Model.Email" autocomplete="email" />
+                        <div id="emailFeedback" class="form-text mt-1" style="font-size:0.8rem"></div>
                     </div>
+
                     <div class="mb-3">
                         <label class="form-label">Phone Number</label>
                         <input type="tel" name="PhoneNumber" class="form-control" placeholder="07700 000000"
                                value="@Model.PhoneNumber" autocomplete="tel" />
                     </div>
+
+                    <!-- Password with strength meter -->
                     <div class="mb-3">
                         <label class="form-label">Password</label>
-                        <input type="password" name="Password" class="form-control" placeholder="••••••••"
-                               autocomplete="new-password" />
-                        <div class="form-text" style="color:#64748b">
-                            Min 8 characters &mdash; must include a digit and uppercase letter.
+                        <input type="password" id="passwordInput" name="Password" class="form-control"
+                               placeholder="••••••••" autocomplete="new-password" />
+
+                        <!-- Strength bar -->
+                        <div class="mt-2" id="strengthContainer" style="display:none">
+                            <div style="height:5px; background:#e2e8f0; border-radius:3px; overflow:hidden">
+                                <div id="strengthBar" style="height:100%; width:0; border-radius:3px; transition:width 0.3s, background 0.3s"></div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mt-1">
+                                <span id="strengthLabel" style="font-size:0.78rem; font-weight:600"></span>
+                                <span id="strengthHint" style="font-size:0.75rem; color:#94a3b8"></span>
+                            </div>
                         </div>
+
+                        <!-- Requirements checklist -->
+                        <ul class="mt-2 mb-0 ps-3" id="reqList" style="font-size:0.78rem; color:#94a3b8; list-style:none; padding-left:0">
+                            <li id="req-len">&#9675; At least 8 characters</li>
+                            <li id="req-upper">&#9675; Uppercase letter</li>
+                            <li id="req-lower">&#9675; Lowercase letter</li>
+                            <li id="req-digit">&#9675; Number</li>
+                        </ul>
                     </div>
+
                     <div class="mb-4">
                         <label class="form-label">Confirm Password</label>
-                        <input type="password" name="ConfirmPassword" class="form-control" placeholder="••••••••"
-                               autocomplete="new-password" />
+                        <input type="password" id="confirmInput" name="ConfirmPassword" class="form-control"
+                               placeholder="••••••••" autocomplete="new-password" />
+                        <div id="matchFeedback" class="form-text mt-1" style="font-size:0.8rem"></div>
                     </div>
+
                     <button type="submit" class="btn btn-navy w-100 py-2">Create Account</button>
                 </form>
             </div>
@@ -69,3 +94,101 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+<script>
+    const emailInput    = document.getElementById('emailInput');
+    const emailFeedback = document.getElementById('emailFeedback');
+    const passInput     = document.getElementById('passwordInput');
+    const confirmInput  = document.getElementById('confirmInput');
+    const matchFeedback = document.getElementById('matchFeedback');
+    const strengthBar   = document.getElementById('strengthBar');
+    const strengthLabel = document.getElementById('strengthLabel');
+    const strengthHint  = document.getElementById('strengthHint');
+    const strengthBox   = document.getElementById('strengthContainer');
+
+    const emailRegex = /^[a-zA-Z0-9._%+\-]+@@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
+
+    // ── Email validation ───────────────────────────────────────
+    emailInput.addEventListener('input', () => {
+        const val = emailInput.value.trim();
+        if (val === '') {
+            emailFeedback.textContent = '';
+            return;
+        }
+        if (emailRegex.test(val)) {
+            emailFeedback.textContent = '✓ Valid email address';
+            emailFeedback.style.color = '#16a34a';
+        } else {
+            emailFeedback.textContent = '✗ Enter a valid email — e.g. name@gmail.com';
+            emailFeedback.style.color = '#dc2626';
+        }
+    });
+
+    // ── Password strength ──────────────────────────────────────
+    function checkReq(id, pass) {
+        const rules = {
+            'req-len':   pass.length >= 8,
+            'req-upper': /[A-Z]/.test(pass),
+            'req-lower': /[a-z]/.test(pass),
+            'req-digit': /[0-9]/.test(pass)
+        };
+        const el = document.getElementById(id);
+        const met = rules[id];
+        el.textContent = (met ? '✓ ' : '○ ') + el.textContent.replace(/^[✓○] /, '');
+        el.style.color = met ? '#16a34a' : '#94a3b8';
+    }
+
+    passInput.addEventListener('input', () => {
+        const p = passInput.value;
+
+        strengthBox.style.display = p.length > 0 ? 'block' : 'none';
+
+        ['req-len','req-upper','req-lower','req-digit'].forEach(id => checkReq(id, p));
+
+        // Score: length, upper, lower, digit, special
+        let score = 0;
+        if (p.length >= 8)             score++;
+        if (/[A-Z]/.test(p))           score++;
+        if (/[a-z]/.test(p))           score++;
+        if (/[0-9]/.test(p))           score++;
+        if (/[^A-Za-z0-9]/.test(p))    score++;
+
+        const levels = [
+            { label: 'Weak',        color: '#dc2626', width: '20%',  hint: 'Too short or simple' },
+            { label: 'Weak',        color: '#dc2626', width: '25%',  hint: 'Add more variety' },
+            { label: 'Fair',        color: '#d97706', width: '50%',  hint: 'Getting there' },
+            { label: 'Good',        color: '#ca8a04', width: '65%',  hint: 'Add a symbol to strengthen' },
+            { label: 'Strong',      color: '#16a34a', width: '85%',  hint: 'Almost perfect' },
+            { label: 'Very Strong', color: '#0f172a', width: '100%', hint: 'Excellent password' }
+        ];
+
+        const lvl = levels[Math.min(score, levels.length - 1)];
+        strengthBar.style.width      = lvl.width;
+        strengthBar.style.background = lvl.color;
+        strengthLabel.textContent    = lvl.label;
+        strengthLabel.style.color    = lvl.color;
+        strengthHint.textContent     = lvl.hint;
+
+        // Re-check confirm match if already typed
+        if (confirmInput.value) checkMatch();
+    });
+
+    // ── Confirm password match ─────────────────────────────────
+    function checkMatch() {
+        if (confirmInput.value === '') {
+            matchFeedback.textContent = '';
+            return;
+        }
+        if (confirmInput.value === passInput.value) {
+            matchFeedback.textContent = '✓ Passwords match';
+            matchFeedback.style.color = '#16a34a';
+        } else {
+            matchFeedback.textContent = '✗ Passwords do not match';
+            matchFeedback.style.color = '#dc2626';
+        }
+    }
+
+    confirmInput.addEventListener('input', checkMatch);
+</script>
+}

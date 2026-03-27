@@ -48,8 +48,9 @@
                 <form method="post">
                     <div class="mb-3">
                         <label class="form-label">Email Address</label>
-                        <input type="email" name="Email" class="form-control" placeholder="you@example.com"
-                               value="@Model.Email" autocomplete="email" />
+                        <input type="email" id="loginEmail" name="Email" class="form-control"
+                               placeholder="you@example.com" value="@Model.Email" autocomplete="email" />
+                        <div id="loginEmailFeedback" class="form-text mt-1" style="font-size:0.8rem"></div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Password</label>
@@ -72,3 +73,24 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+<script>
+    const loginEmail    = document.getElementById('loginEmail');
+    const loginFeedback = document.getElementById('loginEmailFeedback');
+    const emailRegex    = /^[a-zA-Z0-9._%+\-]+@@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
+
+    loginEmail.addEventListener('input', () => {
+        const val = loginEmail.value.trim();
+        if (val === '') { loginFeedback.textContent = ''; return; }
+
+        if (emailRegex.test(val)) {
+            loginFeedback.textContent = '✓ Valid email address';
+            loginFeedback.style.color = '#16a34a';
+        } else {
+            loginFeedback.textContent = '✗ Enter a valid email — e.g. name@gmail.com';
+            loginFeedback.style.color = '#dc2626';
+        }
+    });
+</script>
+}
