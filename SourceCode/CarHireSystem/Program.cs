@@ -68,11 +68,11 @@ using (var scope = app.Services.CreateScope())
             new Car(2, "BMW", "X5", "XY99ZZZ", 95.00m, 5),
             new Car(3, "Ford", "Fiesta", "FD21ABC", 28.00m, 5),
             new Car(4, "Mercedes", "C-Class", "MC55DEF", 120.00m, 5),
-            new Car(5, "Vauxhall", "Astra", "VA33GHI", 45.00m, 5)
+            new Car(5, "Vauxhall", "Astra", "VA33GHI", 45.00m, 5),
 			new Car(6, "Porsche", "Taycan", "PO45CH3", 75.00m, 5),
 			new Car(7, "Ford", "Raptor", "RA970R", 45.00m, 5),
-			new Car(8, "Land Rover", "Defender", "M0N37", 150.00m, 7)
-			new Car(9, "Volkswagen", "Golf", "B4NG37", 20.00, 5)
+			new Car(8, "Land Rover", "Defender", "M0N37", 150.00m, 7),
+			new Car(9, "Volkswagen", "Golf", "B4NG37", 20.00m, 5),
 			new Car(10, "MiniCooper", "Countryman", "QW09OP", 30.00m, 5)
         );
         db.SaveChanges();
