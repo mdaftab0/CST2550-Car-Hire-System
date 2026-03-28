@@ -22,12 +22,27 @@ public class SearchModel : PageModel
     [BindProperty] public decimal MaxPrice { get; set; }
 
     public CarArray? Results { get; set; }
+    public bool IsFiltered { get; set; }
 
+    // On page load — show every car, available ones first
+    public async Task OnGetAsync()
+    {
+        var cars = await _db.Cars
+            .OrderByDescending(c => c.IsAvailable)
+            .ThenBy(c => c.PricePerDay)
+            .ToListAsync();
+
+        Results = new CarArray();
+        foreach (var car in cars)
+            Results.Add(car);
+    }
+
+    // On search — filter by price range via BST, sync availability from DB
     public async Task OnPostAsync()
     {
+        IsFiltered = true;
         Results = _searchService.SearchByPriceRange(MinPrice, MaxPrice);
 
-        // Sync IsAvailable from Azure SQL so results reflect real state after restarts
         if (Results.Count > 0)
         {
             var ids = new List<int>();
