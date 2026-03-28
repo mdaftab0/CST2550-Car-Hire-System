@@ -12,6 +12,7 @@ public class ChatMessage
     public string Content { get; set; } = "";
 }
 
+[IgnoreAntiforgeryToken]
 public class ChatModel : PageModel
 {
     private readonly IHttpClientFactory _httpClientFactory;
@@ -25,16 +26,16 @@ public class ChatModel : PageModel
         Be concise, friendly, and helpful. Do not process real payments or store personal data.
 
         Available fleet:
-        - Car 1:  Toyota Corolla     — £35/day  — 5 seats
-        - Car 2:  BMW X5             — £95/day  — 5 seats
-        - Car 3:  Ford Fiesta        — £28/day  — 5 seats
-        - Car 4:  Mercedes C-Class   — £120/day — 5 seats
-        - Car 5:  Vauxhall Astra     — £45/day  — 5 seats
-        - Car 6:  Porsche Taycan     — £75/day  — 5 seats
-        - Car 7:  Ford Raptor        — £45/day  — 5 seats
-        - Car 8:  Land Rover Defender — £150/day — 7 seats
-        - Car 9:  Volkswagen Golf    — £20/day  — 5 seats
-        - Car 10: MiniCooper Countryman — £30/day — 5 seats
+        - Car 1:  Toyota Corolla        — £35/day  — 5 seats
+        - Car 2:  BMW X5                — £95/day  — 5 seats
+        - Car 3:  Ford Fiesta           — £28/day  — 5 seats
+        - Car 4:  Mercedes C-Class      — £120/day — 5 seats
+        - Car 5:  Vauxhall Astra        — £45/day  — 5 seats
+        - Car 6:  Porsche Taycan        — £75/day  — 5 seats
+        - Car 7:  Ford Raptor           — £45/day  — 5 seats
+        - Car 8:  Land Rover Defender   — £150/day — 7 seats
+        - Car 9:  Volkswagen Golf       — £20/day  — 5 seats
+        - Car 10: MiniCooper Countryman — £30/day  — 5 seats
 
         How to search: Visit the Search Cars page and filter by price range.
         How to book: Find a car on the Search page, note the Car ID, then go to the Booking page, enter your details and the Car ID.
@@ -45,41 +46,42 @@ public class ChatModel : PageModel
         When asked about cars under a certain price, list the matching cars with their IDs and prices, and suggest visiting the Search page.
         """;
 
-    public List<ChatMessage> Messages { get; private set; } = new();
-
-    [BindProperty]
-    public string UserInput { get; set; } = "";
-
     public ChatModel(IHttpClientFactory httpClientFactory, IConfiguration config)
     {
         _httpClientFactory = httpClientFactory;
         _config            = config;
     }
 
-    public void OnGet()
+    // Direct visit to /Chat — send home
+    public IActionResult OnGet() => RedirectToPage("/Index");
+
+    // Widget: GET /Chat?handler=Messages — returns history as JSON
+    public IActionResult OnGetMessages()
     {
-        Messages = LoadHistory();
+        var history = LoadHistory();
+        return new JsonResult(history.Select(m => new { role = m.Role, content = m.Content }));
     }
 
-    public async Task<IActionResult> OnPostAsync()
+    // Widget: POST /Chat?handler=Send — sends a message, returns reply as JSON
+    public async Task<IActionResult> OnPostSendAsync([FromForm] string userInput)
     {
-        if (string.IsNullOrWhiteSpace(UserInput))
-            return RedirectToPage();
+        if (string.IsNullOrWhiteSpace(userInput))
+            return new JsonResult(new { reply = "" });
 
         var history = LoadHistory();
-        history.Add(new ChatMessage { Role = "user", Content = UserInput.Trim() });
-
+        history.Add(new ChatMessage { Role = "user", Content = userInput.Trim() });
         var reply = await CallClaudeAsync(history);
         history.Add(new ChatMessage { Role = "assistant", Content = reply });
-
         SaveHistory(history);
-        return RedirectToPage();
+
+        return new JsonResult(new { reply });
     }
 
-    public IActionResult OnPostClear()
+    // Widget: POST /Chat?handler=ClearHistory — wipes session
+    public IActionResult OnPostClearHistory()
     {
         HttpContext.Session.Remove(SessionKey);
-        return RedirectToPage();
+        return new JsonResult(new { ok = true });
     }
 
     // ── Helpers ──────────────────────────────────────────────────────────────
@@ -128,7 +130,7 @@ public class ChatModel : PageModel
             if (!response.IsSuccessStatusCode)
                 return $"Sorry, I couldn't get a response right now. (Error {(int)response.StatusCode})";
 
-            using var doc  = JsonDocument.Parse(raw);
+            using var doc = JsonDocument.Parse(raw);
             var text = doc.RootElement
                 .GetProperty("content")[0]
                 .GetProperty("text")

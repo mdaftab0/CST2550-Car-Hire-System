@@ -71,16 +71,16 @@ using (var scope = app.Services.CreateScope())
     if (!db.Cars.Any())
     {
         db.Cars.AddRange(
-            new Car(1, "Toyota", "Corolla", "AB12CDE", 35.00m, 5),
-            new Car(2, "BMW", "X5", "XY99ZZZ", 95.00m, 5),
-            new Car(3, "Ford", "Fiesta", "FD21ABC", 28.00m, 5),
-            new Car(4, "Mercedes", "C-Class", "MC55DEF", 120.00m, 5),
-            new Car(5, "Vauxhall", "Astra", "VA33GHI", 45.00m, 5),
-			new Car(6, "Porsche", "Taycan", "PO45CH3", 75.00m, 5),
-			new Car(7, "Ford", "Raptor", "RA970R", 45.00m, 5),
-			new Car(8, "Land Rover", "Defender", "M0N37", 150.00m, 7),
-			new Car(9, "Volkswagen", "Golf", "B4NG37", 20.00m, 5),
-			new Car(10, "MiniCooper", "Countryman", "QW09OP", 30.00m, 5)
+            new Car(1, "Toyota", "Corolla", "AB12CDE", 35.00m, 5) { PhotoUrl = "https://placehold.co/600x260/0f172a/ffffff?text=Toyota+Corolla" },
+            new Car(2, "BMW", "X5", "XY99ZZZ", 95.00m, 5) { PhotoUrl = "https://placehold.co/600x260/0f172a/ffffff?text=BMW+X5" },
+            new Car(3, "Ford", "Fiesta", "FD21ABC", 28.00m, 5) { PhotoUrl = "https://placehold.co/600x260/0f172a/ffffff?text=Ford+Fiesta" },
+            new Car(4, "Mercedes", "C-Class", "MC55DEF", 120.00m, 5) { PhotoUrl = "https://placehold.co/600x260/0f172a/ffffff?text=Mercedes+C-Class" },
+            new Car(5, "Vauxhall", "Astra", "VA33GHI", 45.00m, 5) { PhotoUrl = "https://placehold.co/600x260/0f172a/ffffff?text=Vauxhall+Astra" },
+            new Car(6, "Porsche", "Taycan", "PO45CH3", 75.00m, 5) { PhotoUrl = "https://placehold.co/600x260/0f172a/ffffff?text=Porsche+Taycan" },
+            new Car(7, "Ford", "Raptor", "RA970R", 45.00m, 5) { PhotoUrl = "https://placehold.co/600x260/0f172a/ffffff?text=Ford+Raptor" },
+            new Car(8, "Land Rover", "Defender", "M0N37", 150.00m, 7) { PhotoUrl = "https://placehold.co/600x260/0f172a/ffffff?text=Land+Rover+Defender" },
+            new Car(9, "Volkswagen", "Golf", "B4NG37", 20.00m, 5) { PhotoUrl = "https://placehold.co/600x260/0f172a/ffffff?text=Volkswagen+Golf" },
+            new Car(10, "MiniCooper", "Countryman", "QW09OP", 30.00m, 5) { PhotoUrl = "https://placehold.co/600x260/0f172a/ffffff?text=MiniCooper+Countryman" }
         );
         db.SaveChanges();
     }

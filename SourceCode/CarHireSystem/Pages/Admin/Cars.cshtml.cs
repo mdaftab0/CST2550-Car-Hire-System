@@ -31,6 +31,7 @@ public class CarsModel : PageModel
     [BindProperty] public string NewRegistration { get; set; } = "";
     [BindProperty] public decimal NewPricePerDay { get; set; }
     [BindProperty] public int NewSeats { get; set; }
+    [BindProperty] public string? NewPhotoUrl { get; set; }
 
     // ── Edit car fields ───────────────────────────────────────
     [BindProperty] public int EditId { get; set; }
@@ -40,6 +41,7 @@ public class CarsModel : PageModel
     [BindProperty] public decimal EditPricePerDay { get; set; }
     [BindProperty] public int EditSeats { get; set; }
     [BindProperty] public bool EditIsAvailable { get; set; }
+    [BindProperty] public string? EditPhotoUrl { get; set; }
 
     // ID of the car currently being edited (from query string)
     public int? ActiveEditId { get; set; }
@@ -64,7 +66,7 @@ public class CarsModel : PageModel
         int nextId = _db.Cars.Any() ? _db.Cars.Max(c => c.Id) + 1 : 1;
 
         var car = new Car(nextId, NewMake, NewModel, NewRegistration, NewPricePerDay, NewSeats);
-        car.Model = NewModel;
+        car.PhotoUrl = NewPhotoUrl;
 
         _db.Cars.Add(car);
         await _db.SaveChangesAsync();
@@ -83,12 +85,13 @@ public class CarsModel : PageModel
             return RedirectToPage();
         }
 
-        car.Make         = EditMake;
-        car.Model        = EditModel;
+        car.Make = EditMake;
+        car.Model = EditModel;
         car.Registration = EditRegistration;
-        car.PricePerDay  = EditPricePerDay;
-        car.Seats        = EditSeats;
-        car.IsAvailable  = EditIsAvailable;
+        car.PricePerDay = EditPricePerDay;
+        car.Seats = EditSeats;
+        car.IsAvailable = EditIsAvailable;
+        car.PhotoUrl = EditPhotoUrl;
 
         await _db.SaveChangesAsync();
 

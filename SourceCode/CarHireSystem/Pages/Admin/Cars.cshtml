@@ -53,8 +53,12 @@
                     <label class="form-label">Seats</label>
                     <input type="number" name="NewSeats" class="form-control" placeholder="5" min="1" max="9" />
                 </div>
-                <div class="col-md-3 d-flex align-items-end">
-                    <button type="submit" class="btn btn-navy w-100">Add Car</button>
+                <div class="col-md-2">
+                    <label class="form-label">Photo URL</label>
+                    <input type="url" name="NewPhotoUrl" class="form-control" placeholder="https://..." />
+                </div>
+                <div class="col-md-1 d-flex align-items-end">
+                    <button type="submit" class="btn btn-navy w-100">Add</button>
                 </div>
             </div>
         </form>
@@ -141,6 +145,10 @@
                                                 <label class="form-label">Seats</label>
                                                 <input type="number" name="EditSeats" class="form-control"
                                                        value="@car.Seats" min="1" max="9" />
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label class="form-label">Photo URL</label>
+                                                <input type="url" name="EditPhotoUrl" class="form-control" value="@car.PhotoUrl" placeholder="https://..." />
                                             </div>
                                             <div class="col-md-1 d-flex flex-column justify-content-end">
                                                 <div class="form-check mb-2">

@@ -216,9 +216,6 @@
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-page="/Returns">Returns</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-page="/Chat">AI Assistant</a>
-                        </li>
                     </ul>
                     <ul class="navbar-nav align-items-center gap-2">
                         <li class="nav-item">
@@ -277,7 +274,7 @@
                 </div>
             </div>
             <hr />
-            <p style="font-size:0.8rem; text-align:center">&copy; 2026 EasyHire &mdash; <a asp-page="/Privacy">Privacy</a></p>
+            <p style="font-size:0.8rem; text-align:center">&copy; 2026 EasyHire</p>
         </div>
     </footer>
 
@@ -285,5 +282,274 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+
+    <!-- ── Floating AI Chat Widget ─────────────────────────────────── -->
+    <style>
+        #eh-chat-fab {
+            position: fixed;
+            bottom: 28px;
+            right: 28px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--eh-navy);
+            color: #fff;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(15,23,42,0.35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1050;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+        #eh-chat-fab:hover { transform: scale(1.08); box-shadow: 0 6px 24px rgba(15,23,42,0.45); }
+
+        #eh-chat-panel {
+            position: fixed;
+            bottom: 96px;
+            right: 28px;
+            width: 360px;
+            height: 500px;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 8px 40px rgba(15,23,42,0.22);
+            display: none;
+            flex-direction: column;
+            z-index: 1049;
+            overflow: hidden;
+        }
+        #eh-chat-panel.open { display: flex; }
+
+        #eh-chat-header {
+            background: var(--eh-navy);
+            color: #fff;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+        #eh-chat-header .eh-avatar {
+            width: 30px; height: 30px; border-radius: 50%;
+            background: rgba(255,255,255,0.15);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1rem; flex-shrink: 0;
+        }
+        #eh-chat-header .eh-title { flex: 1; font-weight: 600; font-size: 0.95rem; }
+        #eh-chat-header .eh-header-btns { display: flex; gap: 6px; }
+        #eh-chat-header button {
+            background: none; border: none; color: rgba(255,255,255,0.7);
+            font-size: 0.78rem; cursor: pointer; padding: 2px 6px;
+            border-radius: 4px; transition: color 0.1s;
+        }
+        #eh-chat-header button:hover { color: #fff; }
+
+        #eh-chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: #f8fafc;
+        }
+        .eh-msg-user {
+            display: flex; justify-content: flex-end;
+        }
+        .eh-msg-user span {
+            background: var(--eh-navy); color: #fff;
+            padding: 8px 14px; border-radius: 16px 16px 4px 16px;
+            max-width: 82%; font-size: 0.88rem; line-height: 1.45; word-break: break-word;
+        }
+        .eh-msg-bot { display: flex; gap: 8px; align-items: flex-start; }
+        .eh-msg-bot .eh-bot-avatar {
+            width: 26px; height: 26px; background: var(--eh-navy); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: #fff; font-size: 0.7rem; font-weight: 700; flex-shrink: 0; margin-top: 2px;
+        }
+        .eh-msg-bot span {
+            background: #fff; color: var(--eh-navy);
+            padding: 8px 14px; border-radius: 4px 16px 16px 16px;
+            max-width: 82%; font-size: 0.88rem; line-height: 1.5;
+            white-space: pre-wrap; word-break: break-word;
+            box-shadow: 0 1px 4px rgba(15,23,42,0.08);
+        }
+        .eh-msg-typing span { opacity: 0.6; font-style: italic; }
+
+        #eh-chat-empty {
+            margin: auto; text-align: center; color: #94a3b8;
+        }
+        #eh-chat-empty div { font-size: 2rem; margin-bottom: 8px; }
+        #eh-chat-empty p { font-size: 0.82rem; margin: 0; }
+
+        #eh-chat-footer {
+            padding: 10px 12px;
+            border-top: 1px solid var(--eh-border);
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+            background: #fff;
+        }
+        #eh-chat-input {
+            flex: 1; border: 1px solid var(--eh-border); border-radius: 8px;
+            padding: 8px 12px; font-size: 0.88rem; font-family: inherit;
+            color: var(--eh-navy); outline: none;
+        }
+        #eh-chat-input:focus { border-color: var(--eh-navy); }
+        #eh-chat-send {
+            background: var(--eh-navy); color: #fff; border: none;
+            border-radius: 8px; padding: 8px 14px; font-size: 0.88rem;
+            font-weight: 600; cursor: pointer; transition: background 0.15s;
+        }
+        #eh-chat-send:hover { background: var(--eh-navy-mid); }
+        #eh-chat-send:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .eh-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+        .eh-chip {
+            background: #f1f5f9; color: var(--eh-navy);
+            border: 1px solid var(--eh-border); border-radius: 20px;
+            font-size: 0.78rem; padding: 4px 10px; cursor: pointer;
+            transition: background 0.1s;
+        }
+        .eh-chip:hover { background: #e2e8f0; }
+    </style>
+
+    <!-- FAB button -->
+    <button id="eh-chat-fab" onclick="ehChatToggle()" title="AI Assistant">&#128172;</button>
+
+    <!-- Chat panel -->
+    <div id="eh-chat-panel">
+        <div id="eh-chat-header">
+            <div class="eh-avatar">A</div>
+            <span class="eh-title">EasyHire Assistant</span>
+            <div class="eh-header-btns">
+                <button onclick="ehChatClear()" title="Clear chat">Clear</button>
+                <button onclick="ehChatToggle()" title="Close" style="font-size:1rem;">&#215;</button>
+            </div>
+        </div>
+        <div id="eh-chat-messages">
+            <div id="eh-chat-empty">
+                <div>&#129302;</div>
+                <p>How can I help you?</p>
+            </div>
+        </div>
+        <div id="eh-chat-footer">
+            <input id="eh-chat-input" type="text" placeholder="Ask me anything..." maxlength="500"
+                   onkeydown="if(event.key==='Enter'){ehChatSend();}" />
+            <button id="eh-chat-send" onclick="ehChatSend()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        let ehChatOpen = false;
+        const ehChips = ["Cars under £50/day", "What's the cheapest car?", "How do I book?", "How do I return a car?"];
+
+        function ehChatToggle() {
+            ehChatOpen = !ehChatOpen;
+            document.getElementById('eh-chat-panel').classList.toggle('open', ehChatOpen);
+            if (ehChatOpen) {
+                ehLoadHistory();
+                setTimeout(() => document.getElementById('eh-chat-input').focus(), 80);
+            }
+        }
+
+        async function ehLoadHistory() {
+            try {
+                const res = await fetch('/Chat?handler=Messages');
+                const msgs = await res.json();
+                ehRenderMessages(msgs);
+            } catch { /* silently fail */ }
+        }
+
+        function ehRenderMessages(msgs) {
+            const container = document.getElementById('eh-chat-messages');
+            container.innerHTML = '';
+            if (!msgs || msgs.length === 0) {
+                container.innerHTML = `
+                    <div id="eh-chat-empty" style="margin:auto;text-align:center;color:#94a3b8;">
+                        <div style="font-size:2rem;margin-bottom:8px;">&#129302;</div>
+                        <p style="font-size:0.82rem;margin:0 0 12px;">How can I help you today?</p>
+                        <div class="eh-chips">${ehChips.map(c => `<button class="eh-chip" onclick="ehFill(this)">${c}</button>`).join('')}</div>
+                    </div>`;
+                return;
+            }
+            msgs.forEach(m => ehAppendMessage(m.role, m.content));
+            ehScrollBottom();
+        }
+
+        function ehAppendMessage(role, text) {
+            const container = document.getElementById('eh-chat-messages');
+            // Remove empty state if present
+            const empty = document.getElementById('eh-chat-empty');
+            if (empty) empty.remove();
+
+            const div = document.createElement('div');
+            if (role === 'user') {
+                div.className = 'eh-msg-user';
+                div.innerHTML = `<span>${ehEscape(text)}</span>`;
+            } else {
+                div.className = 'eh-msg-bot';
+                div.innerHTML = `<div class="eh-bot-avatar">A</div><span>${ehEscape(text)}</span>`;
+            }
+            container.appendChild(div);
+            ehScrollBottom();
+            return div;
+        }
+
+        function ehScrollBottom() {
+            const c = document.getElementById('eh-chat-messages');
+            c.scrollTop = c.scrollHeight;
+        }
+
+        function ehEscape(str) {
+            return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+        }
+
+        async function ehChatSend() {
+            const input = document.getElementById('eh-chat-input');
+            const sendBtn = document.getElementById('eh-chat-send');
+            const text = input.value.trim();
+            if (!text) return;
+
+            input.value = '';
+            sendBtn.disabled = true;
+            ehAppendMessage('user', text);
+
+            // Show typing indicator
+            const typingDiv = ehAppendMessage('assistant', '...');
+            typingDiv.classList.add('eh-msg-typing');
+
+            try {
+                const fd = new FormData();
+                fd.append('userInput', text);
+                const res = await fetch('/Chat?handler=Send', { method: 'POST', body: fd });
+                const data = await res.json();
+                typingDiv.remove();
+                ehAppendMessage('assistant', data.reply || 'Sorry, no response received.');
+            } catch {
+                typingDiv.remove();
+                ehAppendMessage('assistant', 'Sorry, something went wrong. Please try again.');
+            } finally {
+                sendBtn.disabled = false;
+                input.focus();
+            }
+        }
+
+        async function ehChatClear() {
+            try {
+                const fd = new FormData();
+                await fetch('/Chat?handler=ClearHistory', { method: 'POST', body: fd });
+                ehRenderMessages([]);
+            } catch { /* silently fail */ }
+        }
+
+        function ehFill(btn) {
+            document.getElementById('eh-chat-input').value = btn.innerText;
+            document.getElementById('eh-chat-input').focus();
+        }
+    </script>
+    <!-- ── End Chat Widget ─────────────────────────────────────────── -->
 </body>
 </html>

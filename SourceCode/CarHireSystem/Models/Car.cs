@@ -9,11 +9,13 @@ public class Car
     public decimal PricePerDay { get; set; }
     public int Seats { get; set; }
     public bool IsAvailable { get; set; }
+    public string? PhotoUrl { get; set; }
 
     public Car (int id, string make, string model, string registration, decimal pricePerDay, int seats)
     {
         Id = id;
         Make = make;
+        Model = model;
         Registration = registration;
         PricePerDay = pricePerDay;
         Seats = seats;
