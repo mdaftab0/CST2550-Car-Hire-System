@@ -35,6 +35,14 @@
                         </div>
                     </div>
                     <p class="text-muted mt-2 mb-0" style="font-size:0.85rem">Save your Booking ID — you will need it to return the car.</p>
+                    @if (!Model.IsLoggedIn)
+                    {
+                        <hr style="border-color:var(--eh-border); margin:14px 0 10px;" />
+                        <p class="mb-1" style="font-size:0.85rem;">Want to track your bookings?
+                            <a asp-page="/Account/Register" style="color:var(--eh-navy); font-weight:600;">Create a free account</a>
+                            or <a asp-page="/Account/Login" style="color:var(--eh-navy); font-weight:600;">sign in</a>.
+                        </p>
+                    }
                 </div>
             }
 
@@ -88,15 +96,28 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Full Name</label>
-                            <input type="text" id="inp-name" class="form-control" placeholder="John Smith" required />
+                            <input type="text" id="inp-name" class="form-control" placeholder="John Smith"
+                                   value="@Model.PrefilledName" required />
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Email Address</label>
-                            <input type="email" id="inp-email" class="form-control" placeholder="john@example.com" required />
+                            @if (Model.IsLoggedIn)
+                            {
+                                <input type="email" id="inp-email" class="form-control"
+                                       value="@Model.PrefilledEmail"
+                                       disabled style="background:#f1f5f9; color:#64748b;" />
+                                <small class="text-muted">Tied to your account and cannot be changed.</small>
+                            }
+                            else
+                            {
+                                <input type="email" id="inp-email" class="form-control"
+                                       placeholder="john@example.com" required />
+                            }
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Phone Number</label>
-                            <input type="text" id="inp-phone" class="form-control" placeholder="07700 000000" required />
+                            <input type="text" id="inp-phone" class="form-control" placeholder="07700 000000"
+                                   value="@Model.PrefilledPhone" required />
                         </div>
                         <hr style="border-color:var(--eh-border);" />
                         <h6 class="fw-semibold mb-3">Hire Period</h6>
@@ -118,14 +139,10 @@
 
                     <!-- Step 2: Payment -->
                     <div id="step-payment" class="d-none">
-
-                        <!-- Test mode notice -->
                         <div style="background:#fefce8; border:1px solid #fde047; border-radius:10px; padding:12px 16px; margin-bottom:16px; font-size:0.85rem;">
                             <strong>&#9888; Test Mode</strong> — No real payment will be taken.<br/>
                             Use test card: <strong>4242 4242 4242 4242</strong> &nbsp;|&nbsp; Any future date &nbsp;|&nbsp; Any 3-digit CVC
                         </div>
-
-                        <!-- Order summary -->
                         <div class="card p-4 mb-3">
                             <h6 class="fw-semibold mb-3">Order Summary</h6>
                             <div class="d-flex justify-content-between mb-1" style="font-size:0.9rem;">
@@ -138,8 +155,6 @@
                                 <span id="summary-total" class="price-accent" style="font-size:1.1rem;"></span>
                             </div>
                         </div>
-
-                        <!-- Stripe card element -->
                         <div class="card p-4">
                             <h5 class="fw-semibold mb-3">Card Details</h5>
                             <div id="card-element" style="border:1px solid var(--eh-border); border-radius:8px; padding:12px; background:#fff;"></div>
@@ -148,7 +163,6 @@
                                 Pay <span id="pay-amount"></span>
                             </button>
                         </div>
-
                         <p class="text-center mt-3" style="font-size:0.85rem;">
                             <a href="#" onclick="goBack(); return false;" style="color:var(--eh-navy);">&#8592; Back to details</a>
                         </p>
@@ -156,9 +170,9 @@
 
                     <!-- Hidden form submitted after payment -->
                     <form id="booking-form" method="post" style="display:none;">
-                        <input type="hidden" name="CarId" id="form-carId" value="@Model.CarId" />
+                        <input type="hidden" name="CarId" value="@Model.CarId" />
                         <input type="hidden" name="CustomerName" id="form-name" />
-                        <input type="hidden" name="CustomerEmail" id="form-email" />
+                        <input type="hidden" name="CustomerEmail" id="form-email" value="@Model.PrefilledEmail" />
                         <input type="hidden" name="CustomerPhone" id="form-phone" />
                         <input type="hidden" name="StartDate" id="form-start" />
                         <input type="hidden" name="EndDate" id="form-end" />
@@ -177,12 +191,13 @@
 @section Scripts {
     <script src="https://js.stripe.com/v3/"></script>
     <script>
-        const stripeKey = '@Model.StripePublishableKey';
-        const carId     = @Model.CarId;
+        const stripeKey   = '@Model.StripePublishableKey';
+        const carId       = @Model.CarId;
         const pricePerDay = @(Model.SelectedCar?.PricePerDay ?? 0);
-        const carLabel  = '@(Model.SelectedCar?.Make + " " + Model.SelectedCar?.Model)';
+        const carLabel    = '@(Model.SelectedCar?.Make + " " + Model.SelectedCar?.Model)';
+        const isLoggedIn  = @(Model.IsLoggedIn ? "true" : "false");
 
-        let stripe, cardElement, clientSecret;
+        let stripe, cardElement;
 
         if (stripeKey) {
             stripe = Stripe(stripeKey);
@@ -203,9 +218,14 @@
             });
         }
 
+        function getEmail() {
+            if (isLoggedIn) return '@Model.PrefilledEmail';
+            return document.getElementById('inp-email').value.trim();
+        }
+
         function proceedToPayment() {
             const name  = document.getElementById('inp-name').value.trim();
-            const email = document.getElementById('inp-email').value.trim();
+            const email = getEmail();
             const phone = document.getElementById('inp-phone').value.trim();
             const start = document.getElementById('inp-start').value;
             const end   = document.getElementById('inp-end').value;
@@ -227,16 +247,16 @@
                 document.getElementById('card-error').textContent = 'Stripe is not configured. Add your Stripe keys to the app settings.';
             }
 
-            const days = Math.round((new Date(end) - new Date(start)) / 86400000);
+            const days  = Math.round((new Date(end) - new Date(start)) / 86400000);
             const total = (days * pricePerDay).toFixed(2);
 
             document.getElementById('summary-car').textContent = carLabel;
             document.getElementById('summary-dates').textContent =
-                new Date(start).toLocaleDateString('en-GB', {day:'2-digit',month:'short'}) + ' – ' +
-                new Date(end).toLocaleDateString('en-GB', {day:'2-digit',month:'short',year:'numeric'}) +
+                new Date(start).toLocaleDateString('en-GB', { day:'2-digit', month:'short' }) + ' – ' +
+                new Date(end).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' }) +
                 ' (' + days + ' day' + (days !== 1 ? 's' : '') + ')';
             document.getElementById('summary-total').textContent = '£' + total;
-            document.getElementById('pay-amount').textContent = '£' + total;
+            document.getElementById('pay-amount').textContent    = '£' + total;
 
             document.getElementById('step-details').classList.add('d-none');
             document.getElementById('step-payment').classList.remove('d-none');
@@ -248,7 +268,7 @@
         }
 
         async function submitPayment() {
-            const btn = document.getElementById('pay-btn');
+            const btn    = document.getElementById('pay-btn');
             const errDiv = document.getElementById('card-error');
             btn.disabled = true;
             btn.textContent = 'Processing...';
@@ -257,7 +277,6 @@
             const start = document.getElementById('inp-start').value;
             const end   = document.getElementById('inp-end').value;
 
-            // Create PaymentIntent server-side
             const fd = new FormData();
             fd.append('carId', carId);
             fd.append('startDate', start);
@@ -283,7 +302,6 @@
                 return;
             }
 
-            // Confirm payment with Stripe.js
             const { paymentIntent, error } = await stripe.confirmCardPayment(piRes.clientSecret, {
                 payment_method: { card: cardElement }
             });
@@ -295,12 +313,11 @@
                 return;
             }
 
-            // Payment succeeded — populate and submit hidden form
-            document.getElementById('form-name').value  = document.getElementById('inp-name').value;
-            document.getElementById('form-email').value = document.getElementById('inp-email').value;
-            document.getElementById('form-phone').value = document.getElementById('inp-phone').value;
-            document.getElementById('form-start').value = start;
-            document.getElementById('form-end').value   = end;
+            document.getElementById('form-name').value            = document.getElementById('inp-name').value;
+            document.getElementById('form-email').value           = getEmail();
+            document.getElementById('form-phone').value           = document.getElementById('inp-phone').value;
+            document.getElementById('form-start').value           = start;
+            document.getElementById('form-end').value             = end;
             document.getElementById('form-paymentIntentId').value = paymentIntent.id;
 
             document.getElementById('booking-form').submit();

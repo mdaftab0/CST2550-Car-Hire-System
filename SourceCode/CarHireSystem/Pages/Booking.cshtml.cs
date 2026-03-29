@@ -2,27 +2,29 @@ using CarHireSystem.Database;
 using CarHireSystem.DataStructures;
 using CarHireSystem.Models;
 using CarHireSystem.Services;
-using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Stripe;
 
 namespace CarHireSystem.Pages;
 
-[Authorize]
 public class BookingModel : PageModel
 {
     private readonly BookingService _bookingService;
     private readonly BinarySearchTree _bst;
     private readonly CarHireDbContext _db;
     private readonly IConfiguration _config;
+    private readonly UserManager<ApplicationUser> _userManager;
 
-    public BookingModel(BookingService bookingService, BinarySearchTree bst, CarHireDbContext db, IConfiguration config)
+    public BookingModel(BookingService bookingService, BinarySearchTree bst, CarHireDbContext db,
+        IConfiguration config, UserManager<ApplicationUser> userManager)
     {
         _bookingService = bookingService;
         _bst = bst;
         _db = db;
         _config = config;
+        _userManager = userManager;
     }
 
     [BindProperty] public int CarId { get; set; }
@@ -38,18 +40,36 @@ public class BookingModel : PageModel
     public string? ErrorMessage { get; set; }
     public string StripePublishableKey { get; private set; } = "";
 
+    // Pre-filled values for logged-in users
+    public string PrefilledName { get; private set; } = "";
+    public string PrefilledEmail { get; private set; } = "";
+    public string PrefilledPhone { get; private set; } = "";
+    public bool IsLoggedIn { get; private set; }
+
     public async Task OnGetAsync(int? carId)
     {
         StripePublishableKey = _config["Stripe:PublishableKey"] ?? "";
+
         if (carId.HasValue)
         {
             CarId = carId.Value;
             SelectedCar = await _db.Cars.FindAsync(carId.Value);
         }
+
+        if (User.Identity?.IsAuthenticated == true)
+        {
+            IsLoggedIn = true;
+            var user = await _userManager.GetUserAsync(User);
+            if (user != null)
+            {
+                PrefilledName  = user.FullName;
+                PrefilledEmail = user.Email ?? "";
+                PrefilledPhone = user.PhoneNumber ?? "";
+            }
+        }
     }
 
     // AJAX: POST /Booking?handler=CreatePaymentIntent
-    // Creates a Stripe PaymentIntent and returns the client secret
     public async Task<IActionResult> OnPostCreatePaymentIntentAsync(
         [FromForm] int carId,
         [FromForm] string startDate,
@@ -86,6 +106,20 @@ public class BookingModel : PageModel
     {
         SelectedCar = await _db.Cars.FindAsync(CarId);
         StripePublishableKey = _config["Stripe:PublishableKey"] ?? "";
+
+        // Force email to match account for logged-in users — cannot be overridden
+        if (User.Identity?.IsAuthenticated == true)
+        {
+            CustomerEmail = User.Identity.Name!;
+            IsLoggedIn = true;
+            var user = await _userManager.GetUserAsync(User);
+            if (user != null)
+            {
+                PrefilledName  = user.FullName;
+                PrefilledEmail = user.Email ?? "";
+                PrefilledPhone = user.PhoneNumber ?? "";
+            }
+        }
 
         // Verify the Stripe payment went through
         if (string.IsNullOrEmpty(PaymentIntentId))
