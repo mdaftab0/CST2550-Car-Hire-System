@@ -14,6 +14,13 @@ public class CarArray
 
     public void Add(Car car)
     {
+        if (_count == _items.Length)
+        {
+            var bigger = new Car[_items.Length * 2];
+            for (int i = 0; i < _items.Length; i++)
+                bigger[i] = _items[i];
+            _items = bigger;
+        }
         _items[_count] = car;
         _count++;
     }
