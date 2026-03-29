@@ -29,11 +29,24 @@ public class BookingModel : PageModel
     [BindProperty] public DateTime StartDate { get; set; }
     [BindProperty] public DateTime EndDate { get; set; }
 
+    public Car? SelectedCar { get; set; }
     public Booking? Confirmation { get; set; }
     public string? ErrorMessage { get; set; }
 
+    public async Task OnGetAsync(int? carId)
+    {
+        if (carId.HasValue)
+        {
+            CarId = carId.Value;
+            SelectedCar = await _db.Cars.FindAsync(carId.Value);
+        }
+    }
+
     public async Task OnPostAsync()
     {
+        // Re-load car for display in case of error
+        SelectedCar = await _db.Cars.FindAsync(CarId);
+
         // Find car in BST
         var results = _bst.SearchByPriceRange(0, decimal.MaxValue);
         Car? car = null;
@@ -48,13 +61,19 @@ public class BookingModel : PageModel
 
         if (car == null)
         {
-            ErrorMessage = "Car not found.";
+            ErrorMessage = "Car not found. Please go back and select a car from the search page.";
             return;
         }
 
         if (!car.IsAvailable)
         {
-            ErrorMessage = "Car is not available.";
+            ErrorMessage = "This car is no longer available. Please go back and choose another.";
+            return;
+        }
+
+        if (EndDate <= StartDate)
+        {
+            ErrorMessage = "End date must be after the start date.";
             return;
         }
 
@@ -69,14 +88,10 @@ public class BookingModel : PageModel
             car.PricePerDay
         );
 
-        // Update in-memory state
         car.IsAvailable = false;
         _bookingService.CreateBooking(booking);
 
-        // Persist booking to Azure SQL
         _db.Bookings.Add(booking);
-
-        // Persist car availability to Azure SQL
         var dbCar = await _db.Cars.FindAsync(car.Id);
         if (dbCar != null)
             dbCar.IsAvailable = false;

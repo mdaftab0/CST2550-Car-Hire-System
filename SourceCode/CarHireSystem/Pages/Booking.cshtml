@@ -1,7 +1,7 @@
 @page
 @model CarHireSystem.Pages.BookingModel
 
-<div class="section-hero">
+<div class="section-hero" style="padding:40px 0 36px;">
     <div class="container text-center">
         <h1 class="fw-bold mb-2" style="font-size:2.2rem">Book a Car</h1>
         <p class="mb-0">Fill in your details to confirm your reservation</p>
@@ -34,7 +34,7 @@
                             <p class="fw-semibold">@Model.Confirmation.StartDate.ToString("dd MMM") &ndash; @Model.Confirmation.EndDate.ToString("dd MMM yyyy")</p>
                         </div>
                     </div>
-                    <p class="text-muted mt-2 mb-0" style="font-size:0.85rem">Please save your Booking ID to return the car later.</p>
+                    <p class="text-muted mt-2 mb-0" style="font-size:0.85rem">Save your Booking ID — you will need it to return the car.</p>
                 </div>
             }
 
@@ -43,42 +43,83 @@
                 <div class="alert alert-danger">@Model.ErrorMessage</div>
             }
 
-            <div class="card p-4">
-                <h5 class="fw-semibold mb-4">Reservation Details</h5>
-                <form method="post">
-                    <div class="mb-3">
-                        <label class="form-label">Car ID</label>
-                        <input type="number" name="CarId" class="form-control" placeholder="Enter Car ID from search results" />
+            @if (Model.Confirmation == null)
+            {
+                @if (Model.SelectedCar == null && Model.CarId == 0)
+                {
+                    <div class="card p-4 text-center">
+                        <p class="text-muted mb-3">No car selected. Please choose a car from the search page first.</p>
+                        <a asp-page="/Search" class="btn btn-navy px-4">Browse Cars</a>
                     </div>
-                    <hr style="border-color: var(--eh-border);" />
-                    <h6 class="fw-semibold mb-3">Your Details</h6>
-                    <div class="mb-3">
-                        <label class="form-label">Full Name</label>
-                        <input type="text" name="CustomerName" class="form-control" placeholder="John Smith" />
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Email Address</label>
-                        <input type="text" name="CustomerEmail" class="form-control" placeholder="john@example.com" />
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Phone Number</label>
-                        <input type="text" name="CustomerPhone" class="form-control" placeholder="07700 000000" />
-                    </div>
-                    <hr style="border-color: var(--eh-border);" />
-                    <h6 class="fw-semibold mb-3">Hire Period</h6>
-                    <div class="row g-3 mb-4">
-                        <div class="col-6">
-                            <label class="form-label">Start Date</label>
-                            <input type="date" name="StartDate" class="form-control" />
+                }
+                else
+                {
+                    @* Selected car summary *@
+                    @if (Model.SelectedCar != null)
+                    {
+                        <div class="card mb-4 overflow-hidden" style="border-left: 4px solid var(--eh-navy);">
+                            <div class="d-flex align-items-center gap-3 p-3">
+                                @if (!string.IsNullOrEmpty(Model.SelectedCar.PhotoUrl))
+                                {
+                                    <img src="@Model.SelectedCar.PhotoUrl" alt="@Model.SelectedCar.Make @Model.SelectedCar.Model"
+                                         style="width:90px; height:64px; object-fit:cover; border-radius:6px; flex-shrink:0;" />
+                                }
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <p class="fw-bold mb-0">@Model.SelectedCar.Make @Model.SelectedCar.Model</p>
+                                            <p class="text-muted mb-0" style="font-size:0.82rem">Car ID #@Model.SelectedCar.Id &nbsp;&bull;&nbsp; @Model.SelectedCar.Seats seats &nbsp;&bull;&nbsp; Reg: @Model.SelectedCar.Registration</p>
+                                        </div>
+                                        <span class="price-accent ms-3" style="font-size:1.1rem; white-space:nowrap;">£@Model.SelectedCar.PricePerDay<span style="font-size:0.78rem; color:#64748b; font-weight:400">/day</span></span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-6">
-                            <label class="form-label">End Date</label>
-                            <input type="date" name="EndDate" class="form-control" />
-                        </div>
+                    }
+
+                    <div class="card p-4">
+                        <h5 class="fw-semibold mb-4">Your Details</h5>
+                        <form method="post">
+                            <div class="mb-3">
+                                <label class="form-label">Car ID</label>
+                                <input type="text" class="form-control" value="#@Model.CarId" disabled style="background:#f1f5f9; color:#64748b;" />
+                                <input type="hidden" name="CarId" value="@Model.CarId" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Full Name</label>
+                                <input type="text" name="CustomerName" class="form-control" placeholder="John Smith" required />
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Email Address</label>
+                                <input type="email" name="CustomerEmail" class="form-control" placeholder="john@example.com" required />
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Phone Number</label>
+                                <input type="text" name="CustomerPhone" class="form-control" placeholder="07700 000000" required />
+                            </div>
+                            <hr style="border-color: var(--eh-border);" />
+                            <h6 class="fw-semibold mb-3">Hire Period</h6>
+                            <div class="row g-3 mb-4">
+                                <div class="col-6">
+                                    <label class="form-label">Start Date</label>
+                                    <input type="date" name="StartDate" class="form-control" required />
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label">End Date</label>
+                                    <input type="date" name="EndDate" class="form-control" required />
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-navy w-100 py-2">Confirm Booking</button>
+                        </form>
                     </div>
-                    <button type="submit" class="btn btn-navy w-100 py-2">Confirm Booking</button>
-                </form>
-            </div>
+
+                    <p class="text-muted mt-3 text-center" style="font-size:0.85rem">
+                        Wrong car? <a asp-page="/Search" style="color:var(--eh-navy)">Go back to search</a>
+                    </p>
+                }
+            }
+
         </div>
     </div>
 </div>
