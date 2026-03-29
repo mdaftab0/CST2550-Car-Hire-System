@@ -1,0 +1,80 @@
+@page
+@model CarHireSystem.Pages.MyBookingsModel
+@{
+    ViewData["Title"] = "My Bookings";
+}
+
+<div class="section-hero" style="padding:40px 0 36px;">
+    <div class="container">
+        <h1 class="fw-bold mb-1" style="font-size:2rem">My Bookings</h1>
+        <p class="mb-0">All reservations made with your account</p>
+    </div>
+</div>
+
+<div class="container">
+    @if (!Model.Bookings.Any())
+    {
+        <div class="card p-5 text-center">
+            <p class="text-muted mb-3">You have no bookings yet.</p>
+            <a asp-page="/Search" class="btn btn-navy px-4">Browse Cars</a>
+        </div>
+    }
+    else
+    {
+        <div class="card p-0 overflow-hidden">
+            <div class="table-responsive">
+                <table class="table mb-0" style="font-size:0.9rem;">
+                    <thead style="background:var(--eh-off-white);">
+                        <tr>
+                            <th class="px-4 py-3">Booking ID</th>
+                            <th class="py-3">Car</th>
+                            <th class="py-3">Dates</th>
+                            <th class="py-3">Total</th>
+                            <th class="py-3">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var booking in Model.Bookings)
+                        {
+                            var car = Model.CarsById.GetValueOrDefault(booking.CarID);
+                            <tr>
+                                <td class="px-4 py-3 fw-bold">#@booking.BookingID</td>
+                                <td class="py-3">
+                                    @if (car != null)
+                                    {
+                                        <span class="fw-semibold">@car.Make @car.Model</span>
+                                        <br/>
+                                        <span class="text-muted" style="font-size:0.8rem;">@car.Registration</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Car #@booking.CarID</span>
+                                    }
+                                </td>
+                                <td class="py-3">
+                                    @booking.StartDate.ToString("dd MMM yyyy")<br/>
+                                    <span class="text-muted" style="font-size:0.8rem;">to @booking.EndDate.ToString("dd MMM yyyy")</span>
+                                </td>
+                                <td class="py-3 price-accent">£@booking.TotalCost</td>
+                                <td class="py-3">
+                                    @if (booking.Booked)
+                                    {
+                                        <span class="badge-available">Active</span>
+                                    }
+                                    else
+                                    {
+                                        <span style="background:#f1f5f9; color:#64748b; padding:4px 10px; border-radius:20px; font-size:0.75rem; font-weight:600;">Returned</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <p class="text-muted mt-3" style="font-size:0.85rem;">
+            Need to return a car? Go to the <a asp-page="/Returns" style="color:var(--eh-navy);">Returns page</a> and enter your Booking ID.
+        </p>
+    }
+</div>
