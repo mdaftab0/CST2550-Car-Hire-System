@@ -4,8 +4,11 @@ using CarHireSystem.Models;
 using CarHireSystem.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Stripe;
 
 var builder = WebApplication.CreateBuilder(args);
+
+StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
 
 // Database
 builder.Services.AddDbContext<CarHireDbContext>(options =>
