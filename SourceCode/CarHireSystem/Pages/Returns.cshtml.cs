@@ -5,6 +5,7 @@ using CarHireSystem.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 
 namespace CarHireSystem.Pages;
 
@@ -22,25 +23,38 @@ public class ReturnsModel : PageModel
         _db = db;
     }
 
-    [BindProperty] public int BookingId { get; set; }
-
+    public List<Booking> ActiveBookings { get; set; } = new();
+    public Dictionary<int, Car> CarsById { get; set; } = new();
     public string? SuccessMessage { get; set; }
     public string? ErrorMessage { get; set; }
 
-    public async Task OnPostAsync()
+    public async Task OnGetAsync()
     {
-        // Try HashTable first (fast, in-memory), fall back to DB on app restart
-        Booking? booking = _bookingService.GetBooking(BookingId);
-        if (booking == null)
-            booking = await _db.Bookings.FindAsync(BookingId);
+        await LoadActiveBookingsAsync();
+    }
 
-        if (booking == null)
+    public async Task OnPostAsync(int bookingId)
+    {
+        var email = User.Identity!.Name!;
+
+        // Load booking and verify it belongs to this user
+        var booking = await _db.Bookings.FindAsync(bookingId);
+
+        if (booking == null || booking.CustomerEmail != email)
         {
             ErrorMessage = "Booking not found.";
+            await LoadActiveBookingsAsync();
             return;
         }
 
-        // Find car in BST for in-memory update and display name
+        if (!booking.Booked)
+        {
+            ErrorMessage = "This car has already been returned.";
+            await LoadActiveBookingsAsync();
+            return;
+        }
+
+        // Find car in BST for in-memory update
         var results = _bst.SearchByPriceRange(0, decimal.MaxValue);
         Car? car = null;
         for (int i = 0; i < results.Count; i++)
@@ -52,32 +66,38 @@ public class ReturnsModel : PageModel
             }
         }
 
-        if (car == null)
-        {
-            ErrorMessage = "Car not found.";
-            return;
-        }
+        if (car != null)
+            car.IsAvailable = true;
 
-        // Update in-memory BST car
-        car.IsAvailable = true;
-
-        // Update in-memory HashTable booking if present
-        var htBooking = _bookingService.GetBooking(BookingId);
+        // Update HashTable booking if present
+        var htBooking = _bookingService.GetBooking(bookingId);
         if (htBooking != null)
             htBooking.Booked = false;
 
-        // Persist car availability to Azure SQL
+        // Persist to DB
         var dbCar = await _db.Cars.FindAsync(booking.CarID);
         if (dbCar != null)
             dbCar.IsAvailable = true;
 
-        // Persist booking status to Azure SQL
-        var dbBooking = await _db.Bookings.FindAsync(BookingId);
-        if (dbBooking != null)
-            dbBooking.Booked = false;
-
+        booking.Booked = false;
         await _db.SaveChangesAsync();
 
-        SuccessMessage = $"Car returned successfully. {car.Make} {car.Model} is now available.";
+        SuccessMessage = $"Return successful. {dbCar?.Make} {dbCar?.Model} is now back in the fleet.";
+        await LoadActiveBookingsAsync();
+    }
+
+    private async Task LoadActiveBookingsAsync()
+    {
+        var email = User.Identity!.Name!;
+
+        ActiveBookings = await _db.Bookings
+            .Where(b => b.CustomerEmail == email && b.Booked)
+            .OrderByDescending(b => b.BookingID)
+            .ToListAsync();
+
+        var carIds = ActiveBookings.Select(b => b.CarID).Distinct().ToList();
+        CarsById = await _db.Cars
+            .Where(c => carIds.Contains(c.Id))
+            .ToDictionaryAsync(c => c.Id, c => c);
     }
 }

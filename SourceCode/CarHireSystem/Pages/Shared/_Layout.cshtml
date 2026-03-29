@@ -201,36 +201,36 @@
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-page="/Search">Search Cars</a>
                         </li>
-<li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-page="/Returns">Returns</a>
-                        </li>
-                    </ul>
-                    <ul class="navbar-nav align-items-center gap-2">
-                        <li class="nav-item">
-                            @if (User.IsInRole("Admin"))
-                            {
-                                <a class="btn btn-primary btn-sm px-3" asp-page="/Admin/Index">Admin Panel</a>
-                            }
-                            else if (User.Identity?.IsAuthenticated == true)
-                            {
-                                <a class="btn btn-primary btn-sm px-3" asp-page="/MyBookings">My Bookings</a>
-                            }
-                            else
-                            {
-                                <a class="btn btn-primary btn-sm px-3" asp-area="" asp-page="/Search">Find a Car</a>
-                            }
-                        </li>
                         @if (User.Identity?.IsAuthenticated == true)
                         {
                             <li class="nav-item">
-                                <span class="nav-link" style="font-size:0.85rem; color:rgba(255,255,255,0.6)!important; padding-right:0">
-                                    @User.Identity.Name
-                                </span>
+                                <a class="nav-link" asp-area="" asp-page="/Returns">Returns</a>
                             </li>
+                        }
+                    </ul>
+                    <ul class="navbar-nav align-items-center gap-2">
+                        @if (User.IsInRole("Admin"))
+                        {
                             <li class="nav-item">
-                                <form method="post" asp-page="/Account/Logout" style="margin:0">
-                                    <button type="submit" class="btn btn-outline-light btn-sm px-3">Sign Out</button>
-                                </form>
+                                <a class="btn btn-primary btn-sm px-3" asp-page="/Admin/Index">Admin Panel</a>
+                            </li>
+                        }
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                                   style="font-size:0.85rem; color:rgba(255,255,255,0.75)!important;">
+                                    @User.Identity.Name
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a class="dropdown-item" asp-page="/MyBookings">My Bookings</a></li>
+                                    <li><hr class="dropdown-divider" /></li>
+                                    <li>
+                                        <form method="post" asp-page="/Account/Logout" style="margin:0;">
+                                            <button type="submit" class="dropdown-item">Sign Out</button>
+                                        </form>
+                                    </li>
+                                </ul>
                             </li>
                         }
                         else
@@ -273,7 +273,7 @@
                 </div>
             </div>
             <hr />
-            <p style="font-size:0.8rem; text-align:center">&copy; 2026 EasyHire</p>
+            <p style="font-size:0.8rem; text-align:center">2026 EasyHire</p>
         </div>
     </footer>
 
