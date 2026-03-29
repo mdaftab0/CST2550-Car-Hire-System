@@ -211,6 +211,10 @@
                             {
                                 <a class="btn btn-primary btn-sm px-3" asp-page="/Admin/Index">Admin Panel</a>
                             }
+                            else if (User.Identity?.IsAuthenticated == true)
+                            {
+                                <a class="btn btn-primary btn-sm px-3" asp-page="/MyBookings">My Bookings</a>
+                            }
                             else
                             {
                                 <a class="btn btn-primary btn-sm px-3" asp-area="" asp-page="/Search">Find a Car</a>
