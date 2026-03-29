@@ -80,7 +80,17 @@ using (var scope = app.Services.CreateScope())
             new Car(7, "Ford", "Raptor", "RA970R", 45.00m, 5) { PhotoUrl = "https://placehold.co/600x260/0f172a/ffffff?text=Ford+Raptor" },
             new Car(8, "Land Rover", "Defender", "M0N37", 150.00m, 7) { PhotoUrl = "https://placehold.co/600x260/0f172a/ffffff?text=Land+Rover+Defender" },
             new Car(9, "Volkswagen", "Golf", "B4NG37", 20.00m, 5) { PhotoUrl = "https://placehold.co/600x260/0f172a/ffffff?text=Volkswagen+Golf" },
-            new Car(10, "MiniCooper", "Countryman", "QW09OP", 30.00m, 5) { PhotoUrl = "https://placehold.co/600x260/0f172a/ffffff?text=MiniCooper+Countryman" }
+            new Car(10, "MiniCooper", "Countryman", "QW09OP", 30.00m, 5) { PhotoUrl = "https://placehold.co/600x260/0f172a/ffffff?text=MiniCooper+Countryman" },
+            new Car(11, "Audi", "A3", "AU11DI3", 55.00m, 5) { PhotoUrl = "https://placehold.co/600x260/0f172a/ffffff?text=Audi+A3" },
+            new Car(12, "Nissan", "Qashqai", "NI55SAN", 60.00m, 5) { PhotoUrl = "https://placehold.co/600x260/0f172a/ffffff?text=Nissan+Qashqai" },
+            new Car(13, "Honda", "Civic", "HO13NDA", 40.00m, 5) { PhotoUrl = "https://placehold.co/600x260/0f172a/ffffff?text=Honda+Civic" },
+            new Car(14, "Tesla", "Model 3", "TE14SLA", 85.00m, 5) { PhotoUrl = "https://placehold.co/600x260/0f172a/ffffff?text=Tesla+Model+3" },
+            new Car(15, "Hyundai", "Tucson", "HY15UND", 50.00m, 5) { PhotoUrl = "https://placehold.co/600x260/0f172a/ffffff?text=Hyundai+Tucson" },
+            new Car(16, "Kia", "Sportage", "KI16ASP", 48.00m, 5) { PhotoUrl = "https://placehold.co/600x260/0f172a/ffffff?text=Kia+Sportage" },
+            new Car(17, "Jeep", "Wrangler", "JE17EPW", 80.00m, 5) { PhotoUrl = "https://placehold.co/600x260/0f172a/ffffff?text=Jeep+Wrangler" },
+            new Car(18, "Volvo", "XC40", "VO18LVO", 70.00m, 5) { PhotoUrl = "https://placehold.co/600x260/0f172a/ffffff?text=Volvo+XC40" },
+            new Car(19, "Skoda", "Octavia", "SK19ODA", 32.00m, 5) { PhotoUrl = "https://placehold.co/600x260/0f172a/ffffff?text=Skoda+Octavia" },
+            new Car(20, "Renault", "Zoe", "RE20NAU", 25.00m, 5) { PhotoUrl = "https://placehold.co/600x260/0f172a/ffffff?text=Renault+Zoe" }
         );
         db.SaveChanges();
     }

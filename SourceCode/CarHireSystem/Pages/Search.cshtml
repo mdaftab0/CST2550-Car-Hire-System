@@ -4,37 +4,29 @@
 <div class="section-hero">
     <div class="container text-center">
         <h1 class="fw-bold mb-2" style="font-size:2.2rem">Find Your Perfect Car</h1>
-        <p class="mb-0">Search by name, make, or filter by daily price</p>
+        <p class="mb-0">Search our fleet by daily price range</p>
     </div>
 </div>
 
 <div class="container">
     <div class="row justify-content-center mb-5">
-        <div class="col-md-10">
+        <div class="col-md-8">
             <div class="card p-4">
-                <h5 class="fw-semibold mb-3">Search Fleet</h5>
+                <h5 class="fw-semibold mb-3">Search by Price</h5>
                 <form method="post">
                     <div class="row g-3 align-items-end">
                         <div class="col-md-4">
-                            <label class="form-label">Car Name / Make</label>
-                            <input type="text" name="SearchTerm" class="form-control"
-                                   placeholder="e.g. BMW, Ford, Corolla"
-                                   value="@Model.SearchTerm" />
-                        </div>
-                        <div class="col-md-3">
                             <label class="form-label">Min Price (£/day)</label>
-                            <input type="number" name="MinPrice" class="form-control"
-                                   placeholder="e.g. 20"
+                            <input type="number" name="minPrice" class="form-control" placeholder="e.g. 20"
                                    value="@(Model.MinPrice.HasValue ? Model.MinPrice.ToString() : "")" />
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-4">
                             <label class="form-label">Max Price (£/day)</label>
-                            <input type="number" name="MaxPrice" class="form-control"
-                                   placeholder="e.g. 100"
+                            <input type="number" name="maxPrice" class="form-control" placeholder="e.g. 100"
                                    value="@(Model.MaxPrice.HasValue ? Model.MaxPrice.ToString() : "")" />
                         </div>
-                        <div class="col-md-2">
-                            <button type="submit" class="btn btn-navy w-100">Search</button>
+                        <div class="col-md-4">
+                            <button type="submit" class="btn btn-navy w-100">Search Cars</button>
                         </div>
                     </div>
                 </form>
@@ -58,7 +50,7 @@
         @if (Model.Results.Count == 0)
         {
             <div class="card p-4 text-center text-muted">
-                <p class="mb-0">No cars matched your search. Try different keywords or a wider price range.</p>
+                <p class="mb-0">No cars matched that price range. Try a wider range.</p>
             </div>
         }
         else
