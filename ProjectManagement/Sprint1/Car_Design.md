@@ -41,11 +41,9 @@ Each Car object will contain the following attributes:
 
 These attributes were selected based on system requirements:
 
-- Category allows filtering by car type.
+
 - PricePerDay supports cost calculation.
-- FuelType and Transmission support customer preferences.
 - Seats allow selection based on family size.
-- Kilometers supports rental conditions.
 - IsAvailable tracks rental status.
 
 This ensures the system reflects real-world car rental functionality.
