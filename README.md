@@ -1,5 +1,3 @@
-dotnet new sln -n CarHireSystem --format sln# CST2550 – Car Hire Management System
-
 ## Project Overview
 This project is a Car Hire Management System developed using C# (.NET Console Application).
 
