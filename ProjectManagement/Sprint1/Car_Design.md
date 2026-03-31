@@ -31,16 +31,8 @@ Each Car object will contain the following attributes:
 - CarID (int) – Unique identifier
 - Brand (string)
 - Model (string)
-- Category (string)  
-  (Small, Medium, SUV, Luxury, etc.)
 - PricePerDay (double)
-- FuelType (string)  
-  (Petrol, Diesel, Electric)
-- Transmission (string)  
-  (Automatic, Manual)
 - Seats (int)
-- Kilometers (string)  
-  (Limited / Unlimited)
 - IsAvailable (bool)
 
 ---
@@ -93,12 +85,8 @@ Car
     CarID = 101
     Brand = "Toyota"
     Model = "Corolla"
-    Category = "Medium"
     PricePerDay = 80
-    FuelType = "Petrol"
-    Transmission = "Automatic"
     Seats = 5
-    Kilometers = "Unlimited"
     IsAvailable = true
 
 ---
