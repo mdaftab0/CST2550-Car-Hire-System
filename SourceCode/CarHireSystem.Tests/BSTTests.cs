@@ -50,7 +50,7 @@ public class BSTTests
         var results = _bst.SearchByPriceRange(30m, 100m);
 
         Assert.That(results.Count, Is.EqualTo(2));
-        var ids = Enumerable.Range(0, results.Count).Select(i => results.Get(i).Id).ToList();
+        var ids = Enumerable.Range(0, results.Count).Select(i => results.Get(i).Id).ToArray();
         Assert.That(ids, Does.Contain(1)); // £35
         Assert.That(ids, Does.Contain(2)); // £95
     }
@@ -77,7 +77,7 @@ public class BSTTests
         var results = _bst.SearchByPriceRange(28.00m, 35.00m);
 
         Assert.That(results.Count, Is.EqualTo(2));
-        var ids = Enumerable.Range(0, results.Count).Select(i => results.Get(i).Id).ToList();
+        var ids = Enumerable.Range(0, results.Count).Select(i => results.Get(i).Id).ToArray();
         Assert.That(ids, Does.Contain(1)); // exactly £35
         Assert.That(ids, Does.Contain(3)); // exactly £28
     }
