@@ -28,7 +28,7 @@ public class SearchModel : PageModel
         var cars = await _db.Cars
             .OrderByDescending(c => c.IsAvailable)
             .ThenBy(c => c.PricePerDay)
-            .ToListAsync();
+            .ToArrayAsync();
 
         Results = new CarArray();
         foreach (var car in cars)
@@ -45,16 +45,17 @@ public class SearchModel : PageModel
 
         if (Results.Count > 0)
         {
-            var ids = Enumerable.Range(0, Results.Count).Select(i => Results.Get(i).Id).ToList();
+            var ids = Enumerable.Range(0, Results.Count).Select(i => Results.Get(i).Id).ToArray();
 
             var dbCars = await _db.Cars
                 .Where(c => ids.Contains(c.Id))
-                .ToDictionaryAsync(c => c.Id, c => c);
+                .ToArrayAsync();
 
             for (int i = 0; i < Results.Count; i++)
             {
                 var car = Results.Get(i);
-                if (dbCars.TryGetValue(car.Id, out var dbCar))
+                var dbCar = Array.Find(dbCars, c => c.Id == car.Id);
+                if (dbCar != null)
                 {
                     car.IsAvailable = dbCar.IsAvailable;
                     car.PhotoUrl = dbCar.PhotoUrl;

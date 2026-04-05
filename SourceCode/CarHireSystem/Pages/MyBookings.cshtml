@@ -12,7 +12,7 @@
 </div>
 
 <div class="container">
-    @if (!Model.Bookings.Any())
+    @if (Model.Bookings.Length == 0)
     {
         <div class="card p-5 text-center">
             <p class="text-muted mb-3">You have no bookings yet.</p>
@@ -36,7 +36,7 @@
                     <tbody>
                         @foreach (var booking in Model.Bookings)
                         {
-                            var car = Model.CarsById.GetValueOrDefault(booking.CarID);
+                            var car = Model.Cars.FirstOrDefault(c => c.Id == booking.CarID);
                             <tr>
                                 <td class="px-4 py-3 fw-bold">#@booking.BookingID</td>
                                 <td class="py-3">

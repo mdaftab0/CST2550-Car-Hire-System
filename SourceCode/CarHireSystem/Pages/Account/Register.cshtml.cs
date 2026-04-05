@@ -28,21 +28,21 @@ public class RegisterModel : PageModel
     [BindProperty] public string Password { get; set; } = "";
     [BindProperty] public string ConfirmPassword { get; set; } = "";
 
-    public List<string> ErrorMessages { get; set; } = new();
+    public string[] ErrorMessages { get; set; } = Array.Empty<string>();
 
     public async Task<IActionResult> OnPostAsync()
     {
         // Email format check
         if (!EmailRegex.IsMatch(Email))
         {
-            ErrorMessages.Add("Please enter a valid email address (e.g. name@gmail.com).");
+            ErrorMessages = new[] { "Please enter a valid email address (e.g. name@gmail.com)." };
             return Page();
         }
 
         // Password match check
         if (Password != ConfirmPassword)
         {
-            ErrorMessages.Add("Passwords do not match.");
+            ErrorMessages = new[] { "Passwords do not match." };
             return Page();
         }
 
@@ -52,7 +52,7 @@ public class RegisterModel : PageModel
             !Password.Any(char.IsLower) ||
             !Password.Any(char.IsDigit))
         {
-            ErrorMessages.Add("Password must be at least 8 characters and include an uppercase letter, a lowercase letter, and a digit.");
+            ErrorMessages = new[] { "Password must be at least 8 characters and include an uppercase letter, a lowercase letter, and a digit." };
             return Page();
         }
 
@@ -68,7 +68,7 @@ public class RegisterModel : PageModel
         var result = await _userManager.CreateAsync(user, Password);
         if (!result.Succeeded)
         {
-            ErrorMessages.AddRange(result.Errors.Select(e => e.Description));
+            ErrorMessages = result.Errors.Select(e => e.Description).ToArray();
             return Page();
         }
 

@@ -16,8 +16,8 @@ public class MyBookingsModel : PageModel
         _db = db;
     }
 
-    public List<Booking> Bookings { get; set; } = new();
-    public Dictionary<int, Car> CarsById { get; set; } = new();
+    public Booking[] Bookings { get; set; } = Array.Empty<Booking>();
+    public Car[] Cars { get; set; } = Array.Empty<Car>();
 
     public async Task OnGetAsync()
     {
@@ -26,11 +26,11 @@ public class MyBookingsModel : PageModel
         Bookings = await _db.Bookings
             .Where(b => b.CustomerEmail == email)
             .OrderByDescending(b => b.BookingID)
-            .ToListAsync();
+            .ToArrayAsync();
 
-        var carIds = Bookings.Select(b => b.CarID).Distinct().ToList();
-        CarsById = await _db.Cars
+        var carIds = Bookings.Select(b => b.CarID).Distinct().ToArray();
+        Cars = await _db.Cars
             .Where(c => carIds.Contains(c.Id))
-            .ToDictionaryAsync(c => c.Id, c => c);
+            .ToArrayAsync();
     }
 }

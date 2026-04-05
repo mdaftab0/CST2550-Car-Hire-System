@@ -99,7 +99,7 @@ using (var scope = app.Services.CreateScope())
     }
 
     // Load all cars into BST
-    foreach (var car in db.Cars.ToList())
+    foreach (var car in db.Cars.ToArray())
         bst.Insert(car);
 
     // Seed roles

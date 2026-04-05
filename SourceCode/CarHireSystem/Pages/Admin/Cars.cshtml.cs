@@ -21,7 +21,7 @@ public class CarsModel : PageModel
     }
 
     // ── Page state ────────────────────────────────────────────
-    public List<Car> Cars { get; set; } = new();
+    public Car[] Cars { get; set; } = Array.Empty<Car>();
     public string? ErrorMessage { get; set; }
     public string? SuccessMessage { get; set; }
 
@@ -50,7 +50,7 @@ public class CarsModel : PageModel
     public async Task OnGetAsync(int? editId)
     {
         ActiveEditId = editId;
-        Cars = await _db.Cars.OrderBy(c => c.Id).ToListAsync();
+        Cars = await _db.Cars.OrderBy(c => c.Id).ToArrayAsync();
     }
 
     public async Task<IActionResult> OnPostAddAsync()
@@ -59,7 +59,7 @@ public class CarsModel : PageModel
             || string.IsNullOrWhiteSpace(NewRegistration) || NewPricePerDay <= 0 || NewSeats <= 0)
         {
             ErrorMessage = "All fields are required and price/seats must be greater than zero.";
-            Cars = await _db.Cars.OrderBy(c => c.Id).ToListAsync();
+            Cars = await _db.Cars.OrderBy(c => c.Id).ToArrayAsync();
             return Page();
         }
 
@@ -97,7 +97,7 @@ public class CarsModel : PageModel
 
         // Rebuild BST to reflect updated price ordering
         _bst.Clear();
-        foreach (var c in await _db.Cars.ToListAsync())
+        foreach (var c in await _db.Cars.ToArrayAsync())
             _bst.Insert(c);
 
         TempData["Success"] = $"{car.Make} {car.Model} updated successfully.";
@@ -118,7 +118,7 @@ public class CarsModel : PageModel
 
         // Rebuild BST without the deleted car
         _bst.Clear();
-        foreach (var c in await _db.Cars.ToListAsync())
+        foreach (var c in await _db.Cars.ToArrayAsync())
             _bst.Insert(c);
 
         TempData["Success"] = $"{car.Make} {car.Model} deleted.";

@@ -69,9 +69,9 @@ public class ChatModel : PageModel
             return new JsonResult(new { reply = "" });
 
         var history = LoadHistory();
-        history.Add(new ChatMessage { Role = "user", Content = userInput.Trim() });
+        history = AppendMessage(history, new ChatMessage { Role = "user", Content = userInput.Trim() });
         var reply = await CallClaudeAsync(history);
-        history.Add(new ChatMessage { Role = "assistant", Content = reply });
+        history = AppendMessage(history, new ChatMessage { Role = "assistant", Content = reply });
         SaveHistory(history);
 
         return new JsonResult(new { reply });
@@ -86,20 +86,28 @@ public class ChatModel : PageModel
 
     // ── Helpers ──────────────────────────────────────────────────────────────
 
-    private List<ChatMessage> LoadHistory()
+    private static ChatMessage[] AppendMessage(ChatMessage[] history, ChatMessage message)
+    {
+        var expanded = new ChatMessage[history.Length + 1];
+        Array.Copy(history, expanded, history.Length);
+        expanded[history.Length] = message;
+        return expanded;
+    }
+
+    private ChatMessage[] LoadHistory()
     {
         var json = HttpContext.Session.GetString(SessionKey);
         if (string.IsNullOrEmpty(json))
-            return new List<ChatMessage>();
-        return JsonSerializer.Deserialize<List<ChatMessage>>(json) ?? new List<ChatMessage>();
+            return Array.Empty<ChatMessage>();
+        return JsonSerializer.Deserialize<ChatMessage[]>(json) ?? Array.Empty<ChatMessage>();
     }
 
-    private void SaveHistory(List<ChatMessage> history)
+    private void SaveHistory(ChatMessage[] history)
     {
         HttpContext.Session.SetString(SessionKey, JsonSerializer.Serialize(history));
     }
 
-    private async Task<string> CallClaudeAsync(List<ChatMessage> history)
+    private async Task<string> CallClaudeAsync(ChatMessage[] history)
     {
         var apiKey = _config["Claude:ApiKey"];
         if (string.IsNullOrWhiteSpace(apiKey))

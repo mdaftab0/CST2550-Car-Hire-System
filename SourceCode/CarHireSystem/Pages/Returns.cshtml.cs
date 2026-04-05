@@ -23,8 +23,8 @@ public class ReturnsModel : PageModel
         _db = db;
     }
 
-    public List<Booking> ActiveBookings { get; set; } = new();
-    public Dictionary<int, Car> CarsById { get; set; } = new();
+    public Booking[] ActiveBookings { get; set; } = Array.Empty<Booking>();
+    public Car[] Cars { get; set; } = Array.Empty<Car>();
     public string? SuccessMessage { get; set; }
     public string? ErrorMessage { get; set; }
 
@@ -93,11 +93,11 @@ public class ReturnsModel : PageModel
         ActiveBookings = await _db.Bookings
             .Where(b => b.CustomerEmail == email && b.Booked)
             .OrderByDescending(b => b.BookingID)
-            .ToListAsync();
+            .ToArrayAsync();
 
-        var carIds = ActiveBookings.Select(b => b.CarID).Distinct().ToList();
-        CarsById = await _db.Cars
+        var carIds = ActiveBookings.Select(b => b.CarID).Distinct().ToArray();
+        Cars = await _db.Cars
             .Where(c => carIds.Contains(c.Id))
-            .ToDictionaryAsync(c => c.Id, c => c);
+            .ToArrayAsync();
     }
 }
