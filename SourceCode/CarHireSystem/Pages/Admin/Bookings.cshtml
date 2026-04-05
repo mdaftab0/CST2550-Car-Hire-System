@@ -16,10 +16,10 @@
     <div class="card p-0 overflow-hidden">
         <div class="p-4 border-bottom d-flex justify-content-between align-items-center"
              style="border-color:var(--eh-border)!important">
-            <h5 class="fw-semibold mb-0">@Model.Bookings.Count booking(s)</h5>
+            <h5 class="fw-semibold mb-0">@Model.Bookings.Length booking(s)</h5>
         </div>
 
-        @if (!Model.Bookings.Any())
+        @if (Model.Bookings.Length == 0)
         {
             <div class="p-5 text-center text-muted">No bookings yet.</div>
         }
@@ -42,7 +42,7 @@
                     <tbody>
                         @foreach (var b in Model.Bookings)
                         {
-                            var car = Model.CarsById.TryGetValue(b.CarID, out var c) ? c : null;
+                            var car = Model.Cars.FirstOrDefault(c => c.Id == b.CarID);
                             <tr>
                                 <td class="px-4 py-3 fw-semibold">#@b.BookingID</td>
                                 <td class="py-3">

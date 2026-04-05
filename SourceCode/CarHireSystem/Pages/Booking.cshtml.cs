@@ -92,8 +92,7 @@ public class BookingModel : PageModel
         {
             Amount = amountPence,
             Currency = "gbp",
-            AutomaticPaymentMethods = new PaymentIntentAutomaticPaymentMethodsOptions { Enabled = true },
-            Metadata = new Dictionary<string, string> { { "carId", carId.ToString() } }
+            AutomaticPaymentMethods = new PaymentIntentAutomaticPaymentMethodsOptions { Enabled = true }
         };
 
         var service = new PaymentIntentService();

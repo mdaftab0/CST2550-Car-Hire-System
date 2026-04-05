@@ -16,14 +16,12 @@ public class BookingsModel : PageModel
         _db = db;
     }
 
-    public List<Booking> Bookings { get; set; } = new();
-    public Dictionary<int, Car> CarsById { get; set; } = new();
+    public Booking[] Bookings { get; set; } = Array.Empty<Booking>();
+    public Car[] Cars { get; set; } = Array.Empty<Car>();
 
     public async Task OnGetAsync()
     {
-        Bookings = await _db.Bookings.OrderByDescending(b => b.BookingID).ToListAsync();
-
-        CarsById = await _db.Cars
-            .ToDictionaryAsync(c => c.Id);
+        Bookings = await _db.Bookings.OrderByDescending(b => b.BookingID).ToArrayAsync();
+        Cars = await _db.Cars.ToArrayAsync();
     }
 }
