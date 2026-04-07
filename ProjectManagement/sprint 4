@@ -1,0 +1,25 @@
+Sprint 4 – System Enhancement and Future Improvements
+Duration: Week 4
+Sprint Goal
+To enhance the system by improving performance, usability, and preparing for future scalability.
+Tasks Completed
+Reviewed overall system performance and identified limitations
+Analysed inefficiencies in the Binary Search Tree (BST), particularly in worst-case scenarios
+Refactored code to improve readability and maintainability
+Improved menu system for clearer navigation and user experience
+Added additional validation to handle incorrect user inputs
+Explored implementation of advanced features (design stage only):
+Filtering cars by multiple attributes (e.g., brand and price)
+Sorting car listings
+Researched self-balancing trees (e.g., AVL Tree) as a potential improvement
+Sprint Outcome
+System usability and structure were improved
+Code quality enhanced for easier maintenance
+Limitations of the current BST implementation were clearly identified
+A roadmap for future improvements was established
+Challenges Faced
+Improving the system without changing the core structure
+Balancing time between enhancements and documentation
+Understanding more advanced data structures such as AVL Trees
+Sprint Evaluation
+Sprint 4 focused on refining the system rather than adding core functionality. This phase was important in identifying limitations and improving overall quality. It also demonstrated critical evaluation skills by analysing weaknesses and proposing realistic improvements.
