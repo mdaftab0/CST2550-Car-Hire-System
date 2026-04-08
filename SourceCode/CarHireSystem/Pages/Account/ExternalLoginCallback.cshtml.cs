@@ -19,12 +19,18 @@ public class ExternalLoginCallbackModel : PageModel
         _userManager = userManager;
     }
 
+    public string? DebugMessage { get; private set; }
+
     public async Task<IActionResult> OnGetAsync()
     {
-        // Retrieve the external login info from the OAuth callback
         var info = await _signInManager.GetExternalLoginInfoAsync();
         if (info == null)
-            return RedirectToPage("/Account/Login");
+        {
+            DebugMessage = $"GetExternalLoginInfoAsync returned null. " +
+                           $"Scheme={Request.Scheme}, Host={Request.Host}, " +
+                           $"QueryString={Request.QueryString}";
+            return Page();
+        }
 
         // Try to sign in with an existing linked account
         var signInResult = await _signInManager.ExternalLoginSignInAsync(
@@ -33,10 +39,20 @@ public class ExternalLoginCallbackModel : PageModel
         if (signInResult.Succeeded)
             return RedirectToPage("/Index");
 
-        // No existing account — create one from the Google profile
         var email    = info.Principal.FindFirstValue(ClaimTypes.Email) ?? "";
         var fullName = info.Principal.FindFirstValue(ClaimTypes.Name)  ?? "";
 
+        // Check if an account with this email already exists (registered via password)
+        var existingUser = await _userManager.FindByEmailAsync(email);
+        if (existingUser != null)
+        {
+            // Link the Google login to the existing account and sign in
+            await _userManager.AddLoginAsync(existingUser, info);
+            await _signInManager.SignInAsync(existingUser, isPersistent: false);
+            return RedirectToPage("/Index");
+        }
+
+        // No existing account — create one from the Google profile
         var user = new ApplicationUser
         {
             UserName       = email,
@@ -47,9 +63,12 @@ public class ExternalLoginCallbackModel : PageModel
 
         var createResult = await _userManager.CreateAsync(user);
         if (!createResult.Succeeded)
-            return RedirectToPage("/Account/Login");
+        {
+            DebugMessage = "Account creation failed: " +
+                           string.Join(", ", Array.ConvertAll(createResult.Errors.ToArray(), e => e.Description));
+            return Page();
+        }
 
-        // Link the Google login to the new account, assign Customer role, sign in
         await _userManager.AddLoginAsync(user, info);
         await _userManager.AddToRoleAsync(user, "Customer");
         await _signInManager.SignInAsync(user, isPersistent: false);
