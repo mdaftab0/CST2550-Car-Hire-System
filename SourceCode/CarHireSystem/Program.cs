@@ -128,12 +128,16 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-// Trust Azure's reverse proxy so Request.Scheme is "https" on the live site
-// Without this, OAuth redirect URIs are generated as http:// and Google rejects them
-app.UseForwardedHeaders(new ForwardedHeadersOptions
+// Trust Azure's reverse proxy so Request.Scheme is "https" on the live site.
+// KnownNetworks/KnownProxies must be cleared — by default only loopback is trusted,
+// but Azure's load balancer is not on loopback so the header would be ignored.
+var forwardedOptions = new ForwardedHeadersOptions
 {
     ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-});
+};
+forwardedOptions.KnownNetworks.Clear();
+forwardedOptions.KnownProxies.Clear();
+app.UseForwardedHeaders(forwardedOptions);
 
 if (!app.Environment.IsDevelopment())
 {
