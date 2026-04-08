@@ -36,7 +36,7 @@ public class LoginModel : PageModel
     // Google (external) sign in — redirects to Google OAuth
     public IActionResult OnPostExternalLogin(string provider)
     {
-        var redirectUrl = Url.Page("/Account/ExternalLoginCallback");
+        var redirectUrl = Url.Page("/Account/ExternalLoginCallback", null, null, Request.Scheme);
         var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
         return new ChallengeResult(provider, properties);
     }

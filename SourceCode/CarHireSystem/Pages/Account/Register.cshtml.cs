@@ -22,6 +22,13 @@ public class RegisterModel : PageModel
         _signInManager = signInManager;
     }
 
+    public IActionResult OnPostExternalLogin(string provider)
+    {
+        var redirectUrl = Url.Page("/Account/ExternalLoginCallback", null, null, Request.Scheme);
+        var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+        return new ChallengeResult(provider, properties);
+    }
+
     [BindProperty] public string FullName { get; set; } = "";
     [BindProperty] public string Email { get; set; } = "";
     [BindProperty] public string PhoneNumber { get; set; } = "";
