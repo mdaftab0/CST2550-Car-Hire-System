@@ -60,6 +60,7 @@ builder.Services.AddSingleton(bst);
 builder.Services.AddSingleton(hashTable);
 builder.Services.AddSingleton<SearchService>();
 builder.Services.AddSingleton<BookingService>();
+builder.Services.AddHostedService<BookingExpiryService>();
 
 var app = builder.Build();
 
