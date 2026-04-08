@@ -48,7 +48,7 @@
                                 <td class="py-3">
                                     @if (car != null)
                                     {
-                                        @car.Make @car.Model
+                                        @($"{car.Make} {car.Model}")
                                         <div class="text-muted" style="font-size:0.8rem">@car.Registration</div>
                                     }
                                     else
