@@ -1,3 +1,6 @@
+# Claude Code local instructions (never push to GitHub)
+CLAUDE.md
+
 # .NET build output
 bin/
 obj/
