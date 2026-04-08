@@ -2,6 +2,7 @@ using CarHireSystem.Database;
 using CarHireSystem.DataStructures;
 using CarHireSystem.Models;
 using CarHireSystem.Services;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Stripe;
@@ -127,6 +128,13 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
+// Trust Azure's reverse proxy so Request.Scheme is "https" on the live site
+// Without this, OAuth redirect URIs are generated as http:// and Google rejects them
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+});
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
@@ -135,9 +143,9 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
+app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseSession();
 app.MapStaticAssets();
 app.MapRazorPages().WithStaticAssets();
 
