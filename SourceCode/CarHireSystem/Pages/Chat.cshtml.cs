@@ -1,6 +1,8 @@
+using CarHireSystem.Database;
+using CarHireSystem.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using System.Net.Http.Headers;
+using Microsoft.EntityFrameworkCore;
 using System.Text;
 using System.Text.Json;
 
@@ -17,39 +19,15 @@ public class ChatModel : PageModel
 {
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly IConfiguration     _config;
+    private readonly CarHireDbContext   _db;
 
     private const string SessionKey = "ChatHistory";
 
-    private const string SystemPrompt = """
-        You are an AI assistant for EasyHire Car Hire, a car rental service based in the UK.
-        Your role is to help customers find the right car, understand pricing, and navigate the booking process.
-        Be concise, friendly, and helpful. Do not process real payments or store personal data.
-
-        Available fleet:
-        - Car 1:  Toyota Corolla        — £35/day  — 5 seats
-        - Car 2:  BMW X5                — £95/day  — 5 seats
-        - Car 3:  Ford Fiesta           — £28/day  — 5 seats
-        - Car 4:  Mercedes C-Class      — £120/day — 5 seats
-        - Car 5:  Vauxhall Astra        — £45/day  — 5 seats
-        - Car 6:  Porsche Taycan        — £75/day  — 5 seats
-        - Car 7:  Ford Raptor           — £45/day  — 5 seats
-        - Car 8:  Land Rover Defender   — £150/day — 7 seats
-        - Car 9:  Volkswagen Golf       — £20/day  — 5 seats
-        - Car 10: MiniCooper Countryman — £30/day  — 5 seats
-
-        How to search: Visit the Search Cars page and filter by price range.
-        How to book: Find a car on the Search page, note the Car ID, then go to the Booking page, enter your details and the Car ID.
-        How to return: Go to the Returns page and enter your Booking ID.
-        Contact: easyhire@fake.com | 0123456789
-
-        Important: This is a demonstration website — no real bookings, payments or transactions are processed.
-        When asked about cars under a certain price, list the matching cars with their IDs and prices, and suggest visiting the Search page.
-        """;
-
-    public ChatModel(IHttpClientFactory httpClientFactory, IConfiguration config)
+    public ChatModel(IHttpClientFactory httpClientFactory, IConfiguration config, CarHireDbContext db)
     {
         _httpClientFactory = httpClientFactory;
         _config            = config;
+        _db                = db;
     }
 
     // Direct visit to /Chat — send home
@@ -62,7 +40,7 @@ public class ChatModel : PageModel
         return new JsonResult(history.Select(m => new { role = m.Role, content = m.Content }));
     }
 
-    // Widget: POST /Chat?handler=Send — sends a message, returns reply as JSON
+    // Widget: POST /Chat?handler=Send
     public async Task<IActionResult> OnPostSendAsync([FromForm] string userInput)
     {
         if (string.IsNullOrWhiteSpace(userInput))
@@ -77,11 +55,72 @@ public class ChatModel : PageModel
         return new JsonResult(new { reply });
     }
 
-    // Widget: POST /Chat?handler=ClearHistory — wipes session
+    // Widget: POST /Chat?handler=ClearHistory
     public IActionResult OnPostClearHistory()
     {
         HttpContext.Session.Remove(SessionKey);
         return new JsonResult(new { ok = true });
+    }
+
+    // ── System prompt built dynamically from live DB state ───────────────────
+
+    private async Task<string> BuildSystemPromptAsync()
+    {
+        var cars = await _db.Cars.OrderBy(c => c.PricePerDay).ToArrayAsync();
+
+        // Build fleet table with live availability
+        var fleetBuilder = new StringBuilder();
+        decimal minPrice = 0, maxPrice = 0;
+        int availableCount = 0;
+
+        for (int i = 0; i < cars.Length; i++)
+        {
+            var c = cars[i];
+            var status = c.IsAvailable ? "AVAILABLE" : "unavailable";
+            fleetBuilder.AppendLine(
+                $"  Car #{c.Id,-3} {c.Make} {c.Model,-18} £{c.PricePerDay,6}/day  {c.Seats} seats  [{status}]");
+
+            if (i == 0 || c.PricePerDay < minPrice) minPrice = c.PricePerDay;
+            if (c.PricePerDay > maxPrice) maxPrice = c.PricePerDay;
+            if (c.IsAvailable) availableCount++;
+        }
+
+        return $"""
+            You are a quick-help assistant on the EasyHire car hire website (https://carhire.deancimatu.com).
+
+            Your role is to route customers — not to resolve everything yourself.
+            Answer simple questions directly (prices, availability, how the site works).
+            For anything complex, account issues, disputes, or anything you cannot answer with certainty,
+            direct the customer to the contact details below and stop there.
+
+            Be brief and friendly. Use British English. Plain text only — no bullet symbols or markdown.
+            Keep replies to 1–3 sentences unless showing a car list.
+
+            ═══ LIVE FLEET ({availableCount} of {cars.Length} cars currently available) ═══
+            {fleetBuilder}
+            Price range: £{minPrice}/day to £{maxPrice}/day
+
+            ═══ SITE PAGES ═══
+            Search Cars   — browse and filter the fleet by price range
+            Book a Car    — select a car, enter dates, pay via card
+            My Bookings   — view your booking history (login required)
+            Return a Car  — return an active hire (login required)
+
+            ═══ BOOKING IN BRIEF ═══
+            Search → click Book → fill in details → pay → save the Booking ID shown at the end.
+            Cost = daily rate × number of days. Cars with end dates in the past are returned automatically.
+
+            ═══ CONTACT (direct customers here for anything beyond basic questions) ═══
+            Email: easyhire@fake.com
+            Phone: 0123456789
+
+            ═══ RULES ═══
+            - Never invent booking IDs, registration plates, or availability you cannot see above.
+            - If asked what is available, list only cars marked [AVAILABLE] from the fleet table.
+            - If you cannot answer with confidence, say "For that, please contact us at easyhire@fake.com or call 0123456789."
+            - Do not attempt to process bookings, access accounts, or resolve complaints — route to contact instead.
+            - This is a demonstration system. No real payments are taken.
+            """;
     }
 
     // ── Helpers ──────────────────────────────────────────────────────────────
@@ -111,7 +150,9 @@ public class ChatModel : PageModel
     {
         var apiKey = _config["Claude:ApiKey"];
         if (string.IsNullOrWhiteSpace(apiKey))
-            return "The AI assistant is not configured. Please add the Claude API key to the application settings.";
+            return "The AI assistant is not configured. Please contact the site administrator.";
+
+        var systemPrompt = await BuildSystemPromptAsync();
 
         var client = _httpClientFactory.CreateClient();
         client.DefaultRequestHeaders.Add("x-api-key", apiKey);
@@ -122,8 +163,8 @@ public class ChatModel : PageModel
         var body = new
         {
             model      = "claude-haiku-4-5-20251001",
-            max_tokens = 512,
-            system     = SystemPrompt,
+            max_tokens = 1024,
+            system     = systemPrompt,
             messages
         };
 

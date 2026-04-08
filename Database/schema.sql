@@ -141,3 +141,30 @@ VALUES (N'20260328220130_AddCarPhotoUrl', N'10.0.5');
 COMMIT;
 GO
 
+-- ============================================================
+-- SEED DATA — 20 cars inserted by application on first startup
+-- (Program.cs seeds these if the Cars table is empty)
+-- ============================================================
+INSERT INTO [Cars] ([Id], [Make], [Model], [Registration], [PricePerDay], [Seats], [IsAvailable], [PhotoUrl]) VALUES
+(1,  'Toyota',     'Corolla',    'AB12CDE', 35.00,  5, 1, 'https://placehold.co/600x260/0f172a/ffffff?text=Toyota+Corolla'),
+(2,  'BMW',        'X5',         'XY99ZZZ', 95.00,  5, 1, 'https://placehold.co/600x260/0f172a/ffffff?text=BMW+X5'),
+(3,  'Ford',       'Fiesta',     'FD21ABC', 28.00,  5, 1, 'https://placehold.co/600x260/0f172a/ffffff?text=Ford+Fiesta'),
+(4,  'Mercedes',   'C-Class',    'MC55DEF', 120.00, 5, 1, 'https://placehold.co/600x260/0f172a/ffffff?text=Mercedes+C-Class'),
+(5,  'Vauxhall',   'Astra',      'VA33GHI', 45.00,  5, 1, 'https://placehold.co/600x260/0f172a/ffffff?text=Vauxhall+Astra'),
+(6,  'Porsche',    'Taycan',     'PO45CH3', 75.00,  5, 1, 'https://placehold.co/600x260/0f172a/ffffff?text=Porsche+Taycan'),
+(7,  'Ford',       'Raptor',     'RA970R',  45.00,  5, 1, 'https://placehold.co/600x260/0f172a/ffffff?text=Ford+Raptor'),
+(8,  'Land Rover', 'Defender',   'M0N37',   150.00, 7, 1, 'https://placehold.co/600x260/0f172a/ffffff?text=Land+Rover+Defender'),
+(9,  'Volkswagen', 'Golf',       'B4NG37',  20.00,  5, 1, 'https://placehold.co/600x260/0f172a/ffffff?text=Volkswagen+Golf'),
+(10, 'MiniCooper', 'Countryman', 'QW09OP',  30.00,  5, 1, 'https://placehold.co/600x260/0f172a/ffffff?text=MiniCooper+Countryman'),
+(11, 'Audi',       'A3',         'AU11DI3', 55.00,  5, 1, 'https://placehold.co/600x260/0f172a/ffffff?text=Audi+A3'),
+(12, 'Nissan',     'Qashqai',    'NI55SAN', 60.00,  5, 1, 'https://placehold.co/600x260/0f172a/ffffff?text=Nissan+Qashqai'),
+(13, 'Honda',      'Civic',      'HO13NDA', 40.00,  5, 1, 'https://placehold.co/600x260/0f172a/ffffff?text=Honda+Civic'),
+(14, 'Tesla',      'Model 3',    'TE14SLA', 85.00,  5, 1, 'https://placehold.co/600x260/0f172a/ffffff?text=Tesla+Model+3'),
+(15, 'Hyundai',    'Tucson',     'HY15UND', 50.00,  5, 1, 'https://placehold.co/600x260/0f172a/ffffff?text=Hyundai+Tucson'),
+(16, 'Kia',        'Sportage',   'KI16ASP', 48.00,  5, 1, 'https://placehold.co/600x260/0f172a/ffffff?text=Kia+Sportage'),
+(17, 'Jeep',       'Wrangler',   'JE17EPW', 80.00,  5, 1, 'https://placehold.co/600x260/0f172a/ffffff?text=Jeep+Wrangler'),
+(18, 'Volvo',      'XC40',       'VO18LVO', 70.00,  5, 1, 'https://placehold.co/600x260/0f172a/ffffff?text=Volvo+XC40'),
+(19, 'Skoda',      'Octavia',    'SK19ODA', 32.00,  5, 1, 'https://placehold.co/600x260/0f172a/ffffff?text=Skoda+Octavia'),
+(20, 'Renault',    'Zoe',        'RE20NAU', 25.00,  5, 1, 'https://placehold.co/600x260/0f172a/ffffff?text=Renault+Zoe');
+GO
+
