@@ -4,34 +4,35 @@ public class Booking
 {
     public int BookingID { get; set; }
     public int CarID { get; set; }
-    public string? CustomerName { get; set; }
-    public string? CustomerEmail { get; set; }
-    public string? CustomerPhone { get; set; }
+    public string CustomerName { get; set; } = string.Empty;
+    public string CustomerEmail { get; set; } = string.Empty;
+    public string CustomerPhone { get; set; } = string.Empty;
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
-    public bool Booked { get; set; }
-    public decimal TotalCost { get; set; }
+    public bool IsActive { get; set; }
+    public decimal TotalCost { get; private set; }
 
-    public Booking(int bookingID, int carID, string customerName, string customerEmail, string customerPhone, DateTime startDate,
-        DateTime endDate, decimal pricePerDay)
+    public Booking() { }
+
+    public Booking(int bookingID, int carID, string name, string email, string phone, DateTime start, DateTime end, decimal pricePerDay)
     {
+        if (end < start) throw new ArgumentException("End date cannot be before start date.");
+
         BookingID = bookingID;
         CarID = carID;
-        CustomerName = customerName;
-        CustomerEmail = customerEmail;
-        CustomerPhone = customerPhone;
-        StartDate = startDate;
-        EndDate = endDate;
-        Booked = true;
-        
-        TotalCost = (endDate - startDate).Days * pricePerDay;
+        CustomerName = name;
+        CustomerEmail = email;
+        CustomerPhone = phone;
+        StartDate = start;
+        EndDate = end;
+        IsActive = true;
+
+        // Calculate duration (minimum 1 day charge)
+        int days = (end - start).Days;
+        if (days <= 0) days = 1; 
+        TotalCost = days * pricePerDay;
     }
 
-	public Booking() { }
-	
-    public override string ToString()
-    {
-        string status = Booked ? "Booked" : "Not Booked";
-        return $"{BookingID} - {status} | {CarID} | {CustomerName} | {CustomerEmail} {CustomerPhone}| {StartDate} - {EndDate}";
-    }
+    public override string ToString() =>
+        $"Booking #{BookingID} [Car: {CarID}] - {CustomerName} | {StartDate:yyyy-MM-dd} to {EndDate:yyyy-MM-dd} | Total: ${TotalCost:F2}";
 }
