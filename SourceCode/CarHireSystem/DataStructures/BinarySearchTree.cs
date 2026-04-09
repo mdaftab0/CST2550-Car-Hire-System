@@ -1,7 +1,9 @@
-namespace CarHireSystem.DataStructures;
 using CarHireSystem.Models;
+using System.Threading;
 
-public class BinarySearchTree
+namespace CarHireSystem.DataStructures;
+
+public class BinarySearchTree : IDisposable
 {
     private class Node
     {
@@ -9,87 +11,93 @@ public class BinarySearchTree
         public Node? Left { get; set; }
         public Node? Right { get; set; }
 
-        public Node(Car car)
-        {
-            Data = car;
-            Left = null;
-            Right = null;
-        }
+        public Node(Car car) => Data = car;
     }
 
     private Node? _root;
+    
+    private readonly ReaderWriterLockSlim _lock = new ReaderWriterLockSlim();
 
     public void Insert(Car car)
     {
-        if (_root == null)
+        if (car == null) return;
+
+        _lock.EnterWriteLock();
+        try
         {
-            _root = new Node(car);
-        }
-        else
-        {
+            if (_root == null)
+            {
+                _root = new Node(car);
+                return;
+            }
+
             Node current = _root;
             while (true)
             {
                 if (car.PricePerDay < current.Data.PricePerDay)
                 {
-                    if (current.Left == null)
-                    {
-                        current.Left = new Node(car);
-                        return;
-                    }
-                    else
-                    {
-                        current = current.Left;
-                    }
-                }
-                else if (car.PricePerDay > current.Data.PricePerDay)
-                {
-                    if (current.Right == null)
-                    {
-                        current.Right = new Node(car);
-                        return;
-                    }
-                    else
-                    {
-                        current = current.Right;
-                    }
+                    if (current.Left == null) { current.Left = new Node(car); break; }
+                    current = current.Left;
                 }
                 else
                 {
-                    return;
+                    if (current.Right == null) { current.Right = new Node(car); break; }
+                    current = current.Right;
                 }
             }
+        }
+        finally
+        {
+            _lock.ExitWriteLock();
         }
     }
 
     public void Clear()
     {
-        _root = null;
+        _lock.EnterWriteLock();
+        try
+        {
+            _root = null;
+        }
+        finally
+        {
+            _lock.ExitWriteLock();
+        }
     }
 
     public CarArray SearchByPriceRange(decimal min, decimal max)
     {
-        CarArray results = new CarArray();
-        SearchRecursive(_root, min, max, results);
-        return results;
+        _lock.EnterReadLock();
+        try
+        {
+            CarArray results = new CarArray();
+            if (min > max) return results;
+            
+            SearchRecursive(_root, min, max, results);
+            return results;
+        }
+        finally
+        {
+            _lock.ExitReadLock();
+        }
     }
+
     private void SearchRecursive(Node? node, decimal min, decimal max, CarArray results)
     {
-        if (node == null)
-        {
-            return;
-        }
-        if (min <= node.Data.PricePerDay && node.Data.PricePerDay <= max)
-        {
-            results.Add(node.Data);
-        }
-        if (min < node.Data.PricePerDay)
-        {
+        if (node == null) return;
+
+        if (node.Data.PricePerDay > min)
             SearchRecursive(node.Left, min, max, results);
-        }
-        if (max > node.Data.PricePerDay)
-        {
+
+        if (node.Data.PricePerDay >= min && node.Data.PricePerDay <= max)
+            results.Add(node.Data);
+
+        if (node.Data.PricePerDay < max)
             SearchRecursive(node.Right, min, max, results);
-        }
+    }
+
+    public void Dispose()
+    {
+        _lock.Dispose();
     }
 }
