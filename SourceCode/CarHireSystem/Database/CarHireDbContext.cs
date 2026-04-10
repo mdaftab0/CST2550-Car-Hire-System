@@ -51,6 +51,9 @@ public class CarHireDbContext : IdentityDbContext<ApplicationUser>
             entity.Property(b => b.CustomerEmail).IsRequired().HasMaxLength(150);
             entity.Property(b => b.CustomerPhone).HasMaxLength(20);
 
+            // Map IsActive to the existing 'Booked' column — avoids a migration
+            entity.Property(b => b.IsActive).HasColumnName("Booked");
+
             // Money precision
             entity.Property(b => b.TotalCost)
                   .HasPrecision(18, 2);
