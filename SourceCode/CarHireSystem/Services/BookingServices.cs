@@ -26,7 +26,7 @@ public class BookingService
         Booking? booking = _hashTable.GetById(bookingId);
         if (booking != null)
         {
-            booking.Booked = false;
+            booking.IsActive = false;
             car.IsAvailable = true;
         }
     }

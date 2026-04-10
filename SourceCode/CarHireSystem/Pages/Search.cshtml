@@ -58,7 +58,7 @@
             <div class="row g-4">
                 @for (int i = 0; i < Model.Results.Count; i++)
                 {
-                    var car = Model.Results.Get(i);
+                    var car = Model.Results[i];
                     <div class="col-md-4">
                         <div class="card overflow-hidden h-100" style="border-top: 3px solid var(--eh-navy);">
                             @if (!string.IsNullOrEmpty(car.PhotoUrl))

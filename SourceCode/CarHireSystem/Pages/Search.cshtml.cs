@@ -45,7 +45,7 @@ public class SearchModel : PageModel
 
         if (Results.Count > 0)
         {
-            var ids = Enumerable.Range(0, Results.Count).Select(i => Results.Get(i).Id).ToArray();
+            var ids = Enumerable.Range(0, Results.Count).Select(i => Results[i].Id).ToArray();
 
             var dbCars = await _db.Cars
                 .Where(c => ids.Contains(c.Id))
@@ -53,7 +53,7 @@ public class SearchModel : PageModel
 
             for (int i = 0; i < Results.Count; i++)
             {
-                var car = Results.Get(i);
+                var car = Results[i];
                 var dbCar = Array.Find(dbCars, c => c.Id == car.Id);
                 if (dbCar != null)
                 {

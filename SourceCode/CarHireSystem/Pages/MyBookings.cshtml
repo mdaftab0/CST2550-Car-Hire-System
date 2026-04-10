@@ -57,7 +57,7 @@
                                 </td>
                                 <td class="py-3 price-accent">£@booking.TotalCost</td>
                                 <td class="py-3">
-                                    @if (booking.Booked)
+                                    @if (booking.IsActive)
                                     {
                                         <span class="badge-available">Active</span>
                                     }

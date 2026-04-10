@@ -150,9 +150,9 @@ public class BookingModel : PageModel
         Car? car = null;
         for (int i = 0; i < results.Count; i++)
         {
-            if (results.Get(i).Id == CarId)
+            if (results[i].Id == CarId)
             {
-                car = results.Get(i);
+                car = results[i];
                 break;
             }
         }

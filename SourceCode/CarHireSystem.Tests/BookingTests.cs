@@ -24,12 +24,12 @@ public class BookingTests
     }
 
     [Test]
-    public void Booked_DefaultsToTrue()
+    public void IsActive_DefaultsToTrue()
     {
         var booking = new Booking(1, 1, "Jane Doe", "jane@test.com", "07700123456",
             new DateTime(2026, 4, 1), new DateTime(2026, 4, 3), 50.00m);
 
-        Assert.That(booking.Booked, Is.True);
+        Assert.That(booking.IsActive, Is.True);
     }
 
     [Test]
@@ -55,12 +55,12 @@ public class BookingTests
     }
 
     [Test]
-    public void TotalCost_ZeroDays_IsZero()
+    public void TotalCost_ZeroDays_ChargesMinimumOneDay()
     {
         var date = new DateTime(2026, 4, 1);
 
         var booking = new Booking(1, 1, "Jane Doe", "jane@test.com", "07700123456", date, date, 35.00m);
 
-        Assert.That(booking.TotalCost, Is.EqualTo(0m));
+        Assert.That(booking.TotalCost, Is.EqualTo(35.00m));
     }
 }

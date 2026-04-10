@@ -41,7 +41,7 @@ public class BookingExpiryService : BackgroundService
         var today = DateTime.Today;
 
         var expired = await db.Bookings
-            .Where(b => b.Booked && b.EndDate < today)
+            .Where(b => b.IsActive && b.EndDate < today)
             .ToArrayAsync();
 
         if (expired.Length == 0) return;
@@ -57,7 +57,7 @@ public class BookingExpiryService : BackgroundService
         foreach (var booking in expired)
         {
             // Mark booking returned in DB
-            booking.Booked = false;
+            booking.IsActive = false;
 
             // Mark car available in DB
             var dbCar = Array.Find(dbCars, c => c.Id == booking.CarID);
@@ -67,14 +67,14 @@ public class BookingExpiryService : BackgroundService
             // Sync HashTable
             var htBooking = _hashTable.GetById(booking.BookingID);
             if (htBooking != null)
-                htBooking.Booked = false;
+                htBooking.IsActive = false;
 
             // Sync BST
             for (int i = 0; i < bstCars.Count; i++)
             {
-                if (bstCars.Get(i).Id == booking.CarID)
+                if (bstCars[i].Id == booking.CarID)
                 {
-                    bstCars.Get(i).IsAvailable = true;
+                    bstCars[i].IsAvailable = true;
                     break;
                 }
             }

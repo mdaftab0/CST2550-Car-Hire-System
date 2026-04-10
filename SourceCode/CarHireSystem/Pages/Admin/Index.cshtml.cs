@@ -25,6 +25,6 @@ public class IndexModel : PageModel
         TotalCars     = await _db.Cars.CountAsync();
         AvailableCars = await _db.Cars.CountAsync(c => c.IsAvailable);
         TotalBookings = await _db.Bookings.CountAsync();
-        ActiveBookings = await _db.Bookings.CountAsync(b => b.Booked);
+        ActiveBookings = await _db.Bookings.CountAsync(b => b.IsActive);
     }
 }

@@ -47,7 +47,7 @@ public class ReturnsModel : PageModel
             return;
         }
 
-        if (!booking.Booked)
+        if (!booking.IsActive)
         {
             ErrorMessage = "This car has already been returned.";
             await LoadActiveBookingsAsync();
@@ -59,9 +59,9 @@ public class ReturnsModel : PageModel
         Car? car = null;
         for (int i = 0; i < results.Count; i++)
         {
-            if (results.Get(i).Id == booking.CarID)
+            if (results[i].Id == booking.CarID)
             {
-                car = results.Get(i);
+                car = results[i];
                 break;
             }
         }
@@ -72,14 +72,14 @@ public class ReturnsModel : PageModel
         // Update HashTable booking if present
         var htBooking = _bookingService.GetBooking(bookingId);
         if (htBooking != null)
-            htBooking.Booked = false;
+            htBooking.IsActive = false;
 
         // Persist to DB
         var dbCar = await _db.Cars.FindAsync(booking.CarID);
         if (dbCar != null)
             dbCar.IsAvailable = true;
 
-        booking.Booked = false;
+        booking.IsActive = false;
         await _db.SaveChangesAsync();
 
         SuccessMessage = $"Return successful. {dbCar?.Make} {dbCar?.Model} is now back in the fleet.";
@@ -91,7 +91,7 @@ public class ReturnsModel : PageModel
         var email = User.Identity!.Name!;
 
         ActiveBookings = await _db.Bookings
-            .Where(b => b.CustomerEmail == email && b.Booked)
+            .Where(b => b.CustomerEmail == email && b.IsActive)
             .OrderByDescending(b => b.BookingID)
             .ToArrayAsync();
 
