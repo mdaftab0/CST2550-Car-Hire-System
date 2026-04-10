@@ -43,18 +43,25 @@
 
     <!-- Quick links -->
     <div class="row g-4">
-        <div class="col-md-6">
+        <div class="col-md-4">
             <div class="card p-4">
                 <h5 class="fw-semibold mb-2">Fleet Management</h5>
                 <p class="text-muted mb-3" style="font-size:0.9rem">Add, edit or remove cars from the fleet.</p>
                 <a asp-page="/Admin/Cars" class="btn btn-navy btn-sm px-4">Manage Cars</a>
             </div>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-4">
             <div class="card p-4">
                 <h5 class="fw-semibold mb-2">Bookings</h5>
                 <p class="text-muted mb-3" style="font-size:0.9rem">View all customer bookings and their status.</p>
                 <a asp-page="/Admin/Bookings" class="btn btn-navy btn-sm px-4">View Bookings</a>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card p-4">
+                <h5 class="fw-semibold mb-2">Profits</h5>
+                <p class="text-muted mb-3" style="font-size:0.9rem">View earnings broken down by daily, weekly, monthly or lifetime.</p>
+                <a asp-page="/Admin/Profits" class="btn btn-navy btn-sm px-4">View Profits</a>
             </div>
         </div>
     </div>

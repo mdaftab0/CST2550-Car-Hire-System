@@ -1,0 +1,82 @@
+@page
+@model CarHireSystem.Pages.Admin.ProfitsModel
+@{
+    ViewData["Title"] = "Profits";
+
+    string[] periods = ["lifetime", "monthly", "weekly", "daily"];
+    string[] labels  = ["Lifetime",  "Monthly",  "Weekly",  "Daily"];
+
+    string periodLabel = Model.Period switch
+    {
+        "daily"   => "Today",
+        "weekly"  => "Last 7 Days",
+        "monthly" => "Last 30 Days",
+        _         => "All Time"
+    };
+}
+
+<div class="section-hero">
+    <div class="container">
+        <h1 class="fw-bold mb-1" style="font-size:2rem">Profits</h1>
+        <p class="mb-0">EasyHire earnings breakdown</p>
+    </div>
+</div>
+
+<div class="container">
+
+    <!-- Period filter -->
+    <div class="d-flex gap-2 mb-4 flex-wrap">
+        @for (int i = 0; i < periods.Length; i++)
+        {
+            var p = periods[i];
+            var l = labels[i];
+            if (Model.Period == p)
+            {
+                <a asp-page="/Admin/Profits" asp-route-period="@p"
+                   class="btn btn-navy btn-sm px-4">@l</a>
+            }
+            else
+            {
+                <a asp-page="/Admin/Profits" asp-route-period="@p"
+                   class="btn btn-sm px-4"
+                   style="border:1px solid var(--eh-border); color:var(--eh-navy); background:#fff">@l</a>
+            }
+        }
+    </div>
+
+    <!-- Stat cards -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="card p-4 text-center" style="border-top:3px solid #16a34a;">
+                <div class="text-muted mb-1" style="font-size:0.85rem">Total Earnings (@periodLabel)</div>
+                <div class="fw-bold" style="font-size:2.4rem; color:#16a34a">
+                    £@Model.TotalEarnings.ToString("N2")
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card p-4 text-center" style="border-top:3px solid var(--eh-navy);">
+                <div class="text-muted mb-1" style="font-size:0.85rem">Bookings (@periodLabel)</div>
+                <div class="fw-bold" style="font-size:2.4rem; color:var(--eh-navy)">
+                    @Model.BookingCount
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card p-4 text-center" style="border-top:3px solid #d97706;">
+                <div class="text-muted mb-1" style="font-size:0.85rem">Avg. per Booking (@periodLabel)</div>
+                <div class="fw-bold" style="font-size:2.4rem; color:#d97706">
+                    £@Model.AverageEarning.ToString("N2")
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.BookingCount == 0)
+    {
+        <div class="card p-5 text-center text-muted">
+            No bookings recorded for this period.
+        </div>
+    }
+
+</div>
