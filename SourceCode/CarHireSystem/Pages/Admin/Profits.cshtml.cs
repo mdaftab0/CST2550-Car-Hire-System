@@ -31,22 +31,52 @@ public class ProfitsModel : PageModel
 
         var today = DateTime.UtcNow.Date;
 
-        DateTime? cutoff = Period switch
+        var allBookings = await _db.Bookings.ToListAsync();
+
+        if (Period == "lifetime")
         {
-            "daily"   => today,
-            "weekly"  => today.AddDays(-6),
-            "monthly" => today.AddDays(-29),
-            _         => null
-        };
+            TotalEarnings = allBookings.Sum(b => b.TotalCost);
+            BookingCount  = allBookings.Count;
+        }
+        else
+        {
+            var periodStart = Period switch
+            {
+                "daily"   => today,
+                "weekly"  => today.AddDays(-6),
+                "monthly" => today.AddDays(-29),
+                _         => today
+            };
+            var periodEnd = today;
 
-        var query = _db.Bookings.AsQueryable();
-        if (cutoff.HasValue)
-            query = query.Where(b => b.StartDate.Date >= cutoff.Value);
+            decimal earnings = 0;
+            int count = 0;
 
-        var costs = await query.Select(b => b.TotalCost).ToListAsync();
+            foreach (var b in allBookings)
+            {
+                var bookingStart = b.StartDate.Date;
+                var bookingEnd   = b.EndDate.Date;
 
-        BookingCount   = costs.Count;
-        TotalEarnings  = costs.Sum();
+                // Overlap between booking span and selected period
+                var overlapStart = bookingStart > periodStart ? bookingStart : periodStart;
+                var overlapEnd   = bookingEnd   < periodEnd   ? bookingEnd   : periodEnd;
+
+                int overlapDays = (int)(overlapEnd - overlapStart).TotalDays + 1;
+                if (overlapDays <= 0) continue;
+
+                // Derive per-day rate from TotalCost
+                int bookingDays = (int)(bookingEnd - bookingStart).TotalDays;
+                if (bookingDays <= 0) bookingDays = 1;
+
+                decimal perDayRate = b.TotalCost / bookingDays;
+                earnings += perDayRate * overlapDays;
+                count++;
+            }
+
+            TotalEarnings = earnings;
+            BookingCount  = count;
+        }
+
         AverageEarning = BookingCount > 0 ? TotalEarnings / BookingCount : 0;
 
         return Page();
