@@ -14,35 +14,103 @@
 
             @if (Model.Confirmation != null)
             {
-                <div class="card p-4 mb-4" style="border-left: 4px solid #16a34a;">
-                    <h5 class="fw-bold text-success mb-3">&#10003; Booking Confirmed</h5>
-                    <div class="row">
-                        <div class="col-6">
-                            <p class="text-muted mb-1" style="font-size:0.85rem">Booking ID</p>
-                            <p class="fw-bold">#@Model.Confirmation.BookingID</p>
-                        </div>
-                        <div class="col-6">
-                            <p class="text-muted mb-1" style="font-size:0.85rem">Total Paid</p>
-                            <p class="price-accent" style="font-size:1.1rem">£@Model.Confirmation.TotalCost</p>
-                        </div>
-                        <div class="col-6">
-                            <p class="text-muted mb-1" style="font-size:0.85rem">Customer</p>
-                            <p class="fw-semibold">@Model.Confirmation.CustomerName</p>
-                        </div>
-                        <div class="col-6">
-                            <p class="text-muted mb-1" style="font-size:0.85rem">Dates</p>
-                            <p class="fw-semibold">@Model.Confirmation.StartDate.ToString("dd MMM") &ndash; @Model.Confirmation.EndDate.ToString("dd MMM yyyy")</p>
+                var c = Model.Confirmation;
+                var days = (c.EndDate - c.StartDate).Days;
+                if (days <= 0) days = 1;
+
+                <div id="receipt" class="card p-0 overflow-hidden mb-4">
+
+                    <!-- Receipt header -->
+                    <div style="background:var(--eh-navy); padding:20px 24px; color:#fff;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="fw-bold" style="font-size:1.1rem; letter-spacing:-0.01em;">EasyHire Car Hire</div>
+                                <div style="font-size:0.8rem; opacity:0.65;">Booking Receipt</div>
+                            </div>
+                            <div style="text-align:right;">
+                                <div class="fw-bold" style="font-size:1.4rem;">&#10003; Confirmed</div>
+                                <div style="font-size:0.8rem; opacity:0.65;">@DateTime.UtcNow.ToString("dd MMM yyyy")</div>
+                            </div>
                         </div>
                     </div>
-                    <p class="text-muted mt-2 mb-0" style="font-size:0.85rem">Save your Booking ID — you will need it to return the car.</p>
-                    @if (!Model.IsLoggedIn)
+
+                    <!-- Booking ID banner -->
+                    <div style="background:#d1fae5; padding:12px 24px; border-bottom:1px solid #6ee7b7;">
+                        <span style="color:#065f46; font-size:0.85rem; font-weight:600;">Booking Reference &nbsp;</span>
+                        <span style="color:#065f46; font-size:1.1rem; font-weight:700; letter-spacing:0.04em;">#@c.BookingID</span>
+                    </div>
+
+                    <div class="p-4">
+                        <!-- Customer & car details side by side -->
+                        <div class="row g-4 mb-3">
+                            <div class="col-sm-6">
+                                <p class="text-muted mb-2" style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.05em; font-weight:600;">Customer</p>
+                                <p class="fw-semibold mb-1">@c.CustomerName</p>
+                                <p class="text-muted mb-1" style="font-size:0.85rem;">@c.CustomerEmail</p>
+                                <p class="text-muted mb-0" style="font-size:0.85rem;">@c.CustomerPhone</p>
+                            </div>
+                            <div class="col-sm-6">
+                                <p class="text-muted mb-2" style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.05em; font-weight:600;">Vehicle</p>
+                                @if (Model.SelectedCar != null)
+                                {
+                                    <p class="fw-semibold mb-1">@Model.SelectedCar.Make @Model.SelectedCar.Model</p>
+                                    <p class="text-muted mb-1" style="font-size:0.85rem;">Reg: @Model.SelectedCar.Registration &nbsp;&bull;&nbsp; @Model.SelectedCar.Seats seats</p>
+                                    <p class="text-muted mb-0" style="font-size:0.85rem;">£@Model.SelectedCar.PricePerDay / day</p>
+                                }
+                                else
+                                {
+                                    <p class="fw-semibold mb-0">Car #@c.CarID</p>
+                                }
+                            </div>
+                        </div>
+
+                        <hr style="border-color:var(--eh-border);" />
+
+                        <!-- Hire period -->
+                        <div class="row g-4 mb-3">
+                            <div class="col-sm-4">
+                                <p class="text-muted mb-1" style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.05em; font-weight:600;">Pick-up</p>
+                                <p class="fw-semibold mb-0">@c.StartDate.ToString("dd MMM yyyy")</p>
+                            </div>
+                            <div class="col-sm-4">
+                                <p class="text-muted mb-1" style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.05em; font-weight:600;">Return By</p>
+                                <p class="fw-semibold mb-0">@c.EndDate.ToString("dd MMM yyyy")</p>
+                            </div>
+                            <div class="col-sm-4">
+                                <p class="text-muted mb-1" style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.05em; font-weight:600;">Duration</p>
+                                <p class="fw-semibold mb-0">@days day@(days != 1 ? "s" : "")</p>
+                            </div>
+                        </div>
+
+                        <hr style="border-color:var(--eh-border);" />
+
+                        <!-- Total -->
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fw-semibold">Total Paid</span>
+                            <span class="price-accent" style="font-size:1.4rem;">£@c.TotalCost.ToString("N2")</span>
+                        </div>
+                    </div>
+
+                    <!-- Footer note -->
+                    <div style="background:var(--eh-off-white); border-top:1px solid var(--eh-border); padding:12px 24px; font-size:0.8rem; color:#64748b;">
+                        Keep this reference number — you will need it to return the car.
+                    </div>
+                </div>
+
+                <!-- Action buttons -->
+                <div class="d-flex gap-3 flex-wrap mb-4 no-print">
+                    <button onclick="window.print()" class="btn btn-navy btn-sm px-4">
+                        &#128424; Print Receipt
+                    </button>
+                    @if (Model.IsLoggedIn)
                     {
-                        <hr style="border-color:var(--eh-border); margin:14px 0 10px;" />
-                        <p class="mb-1" style="font-size:0.85rem;">Want to track your bookings?
-                            <a asp-page="/Account/Register" style="color:var(--eh-navy); font-weight:600;">Create a free account</a>
-                            or <a asp-page="/Account/Login" style="color:var(--eh-navy); font-weight:600;">sign in</a>.
-                        </p>
+                        <a asp-page="/MyBookings" class="btn btn-sm px-4" style="border:1px solid var(--eh-border);">View My Bookings</a>
                     }
+                    else
+                    {
+                        <a asp-page="/Account/Register" class="btn btn-sm px-4" style="border:1px solid var(--eh-border);">Create Account to Track Bookings</a>
+                    }
+                    <a asp-page="/Search" class="btn btn-sm px-4" style="border:1px solid var(--eh-border);">Book Another Car</a>
                 </div>
             }
 
@@ -189,6 +257,16 @@
 </div>
 
 @section Scripts {
+    <style>
+        @@media print {
+            body > *           { display: none !important; }
+            main               { display: block !important; }
+            main > * > * > *   { display: none !important; }
+            #receipt           { display: block !important; }
+            .no-print          { display: none !important; }
+            .section-hero      { display: none !important; }
+        }
+    </style>
     <script src="https://js.stripe.com/v3/"></script>
     <script>
         const stripeKey   = '@Model.StripePublishableKey';
