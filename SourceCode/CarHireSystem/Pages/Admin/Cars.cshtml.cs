@@ -104,6 +104,40 @@ public class CarsModel : PageModel
         return RedirectToPage();
     }
 
+    public async Task<IActionResult> OnPostToggleAsync(int carId)
+    {
+        var car = await _db.Cars.FindAsync(carId);
+        if (car == null)
+        {
+            TempData["Error"] = "Car not found.";
+            return RedirectToPage();
+        }
+
+        // Block if there is an active booking on this car
+        bool hasActiveBooking = await _db.Bookings
+            .AnyAsync(b => b.CarID == carId && b.IsActive && !b.IsCancelled);
+
+        if (hasActiveBooking)
+        {
+            TempData["Error"] = $"{car.Make} {car.Model} has an active booking and cannot be made unavailable.";
+            return RedirectToPage();
+        }
+
+        car.IsAvailable = !car.IsAvailable;
+        await _db.SaveChangesAsync();
+
+        // Sync BST
+        _bst.Clear();
+        foreach (var c in await _db.Cars.ToArrayAsync())
+            _bst.Insert(c);
+
+        TempData["Success"] = car.IsAvailable
+            ? $"{car.Make} {car.Model} is now available."
+            : $"{car.Make} {car.Model} marked as unavailable (maintenance).";
+
+        return RedirectToPage();
+    }
+
     public async Task<IActionResult> OnPostDeleteAsync(int carId)
     {
         var car = await _db.Cars.FindAsync(carId);

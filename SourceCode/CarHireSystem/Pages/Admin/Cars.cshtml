@@ -118,16 +118,38 @@
                                 }
                             </td>
                             <td class="py-3">
-                                <a asp-page="/Admin/Cars" asp-route-editId="@car.Id"
-                                   class="btn btn-outline-primary btn-sm me-1">Edit</a>
-                                <form method="post" asp-page-handler="Delete" style="display:inline"
-                                      onsubmit="return confirm('Delete @car.Make @car.Model?')">
-                                    <input type="hidden" name="carId" value="@car.Id" />
-                                    <button type="submit" class="btn btn-sm"
-                                            style="border:1px solid #dc2626; color:#dc2626; background:transparent">
-                                        Delete
-                                    </button>
-                                </form>
+                                <div class="d-flex gap-2 flex-wrap">
+                                    <a asp-page="/Admin/Cars" asp-route-editId="@car.Id"
+                                       class="btn btn-sm px-3" style="border:1px solid var(--eh-border); font-size:0.78rem;">Edit</a>
+
+                                    <form method="post" asp-page-handler="Toggle" style="margin:0">
+                                        <input type="hidden" name="carId" value="@car.Id" />
+                                        @if (car.IsAvailable)
+                                        {
+                                            <button type="submit" class="btn btn-sm px-3"
+                                                    style="background:#fef3c7; color:#92400e; border:1px solid #fcd34d; font-size:0.78rem;"
+                                                    onclick="return confirm('Mark @car.Make @car.Model as unavailable (maintenance)?')">
+                                                Maintenance
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <button type="submit" class="btn btn-sm px-3"
+                                                    style="background:#d1fae5; color:#065f46; border:1px solid #6ee7b7; font-size:0.78rem;">
+                                                Re-enable
+                                            </button>
+                                        }
+                                    </form>
+
+                                    <form method="post" asp-page-handler="Delete" style="margin:0"
+                                          onsubmit="return confirm('Delete @car.Make @car.Model?')">
+                                        <input type="hidden" name="carId" value="@car.Id" />
+                                        <button type="submit" class="btn btn-sm px-3"
+                                                style="border:1px solid #dc2626; color:#dc2626; background:transparent; font-size:0.78rem;">
+                                            Delete
+                                        </button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
 
