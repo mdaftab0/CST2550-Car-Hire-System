@@ -13,6 +13,19 @@
 
 <div class="container">
 
+    @if (Model.SuccessMessage != null)
+    {
+        <div class="alert mb-4" style="background:#d1fae5; color:#065f46; border:1px solid #6ee7b7; border-radius:8px; padding:12px 16px;">
+            @Model.SuccessMessage
+        </div>
+    }
+    @if (Model.ErrorMessage != null)
+    {
+        <div class="alert mb-4" style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; border-radius:8px; padding:12px 16px;">
+            @Model.ErrorMessage
+        </div>
+    }
+
     <div class="card p-0 overflow-hidden">
         <div class="p-4 border-bottom d-flex justify-content-between align-items-center"
              style="border-color:var(--eh-border)!important">
@@ -37,6 +50,7 @@
                             <th class="py-3">End</th>
                             <th class="py-3">Total</th>
                             <th class="py-3">Status</th>
+                            <th class="py-3">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -56,15 +70,13 @@
                                         <span class="text-muted">Car #@b.CarID</span>
                                     }
                                 </td>
-                                <td class="py-3">
-                                    @b.CustomerName
-                                </td>
+                                <td class="py-3">@b.CustomerName</td>
                                 <td class="py-3 text-muted" style="font-size:0.82rem">
                                     @b.CustomerEmail<br/>@b.CustomerPhone
                                 </td>
                                 <td class="py-3 text-muted">@b.StartDate.ToString("dd MMM yyyy")</td>
                                 <td class="py-3 text-muted">@b.EndDate.ToString("dd MMM yyyy")</td>
-                                <td class="py-3 price-accent">£@b.TotalCost</td>
+                                <td class="py-3 price-accent">£@b.TotalCost.ToString("N2")</td>
                                 <td class="py-3">
                                     @if (b.IsActive)
                                     {
@@ -75,6 +87,29 @@
                                         <span style="background:#f1f5f9; color:#64748b; padding:3px 10px; border-radius:20px; font-size:0.75rem; font-weight:600">Returned</span>
                                     }
                                 </td>
+                                <td class="py-3">
+                                    <div class="d-flex gap-2">
+                                        <!-- Edit -->
+                                        <button type="button" class="btn btn-sm px-3"
+                                                style="border:1px solid var(--eh-border); font-size:0.78rem;"
+                                                onclick="openEdit(@b.BookingID, '@b.CustomerName', '@b.CustomerEmail', '@b.CustomerPhone', '@b.StartDate.ToString("yyyy-MM-dd")', '@b.EndDate.ToString("yyyy-MM-dd")')">
+                                            Edit
+                                        </button>
+
+                                        <!-- Cancel (only for active bookings) -->
+                                        @if (b.IsActive)
+                                        {
+                                            <form method="post" asp-page-handler="Cancel" style="margin:0"
+                                                  onsubmit="return confirm('Cancel booking #@b.BookingID? This will free the car.')">
+                                                <input type="hidden" name="CancelBookingId" value="@b.BookingID" />
+                                                <button type="submit" class="btn btn-sm px-3"
+                                                        style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; font-size:0.78rem;">
+                                                    Cancel
+                                                </button>
+                                            </form>
+                                        }
+                                    </div>
+                                </td>
                             </tr>
                         }
                     </tbody>
@@ -84,3 +119,70 @@
     </div>
 
 </div>
+
+<!-- Edit Modal -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" style="border-radius:12px; overflow:hidden;">
+            <div class="modal-header" style="background:var(--eh-navy); color:#fff; border:none;">
+                <h5 class="modal-title fw-semibold" id="editModalLabel">Edit Booking <span id="editModalId"></span></h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" asp-page-handler="Edit">
+                <div class="modal-body p-4">
+                    <input type="hidden" name="EditBookingId" id="editBookingId" />
+
+                    <div class="mb-3">
+                        <label class="form-label">Customer Name</label>
+                        <input type="text" name="EditCustomerName" id="editCustomerName" class="form-control" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Customer Email <span class="text-muted" style="font-size:0.8rem">(read-only)</span></label>
+                        <input type="email" id="editCustomerEmail" class="form-control" disabled />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Phone</label>
+                        <input type="text" name="EditCustomerPhone" id="editCustomerPhone" class="form-control" />
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <label class="form-label">Start Date</label>
+                            <input type="date" name="EditStartDate" id="editStartDate" class="form-control" required />
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label">End Date</label>
+                            <input type="date" name="EditEndDate" id="editEndDate" class="form-control" required />
+                        </div>
+                    </div>
+
+                    <p class="text-muted mt-3 mb-0" style="font-size:0.8rem">
+                        Total cost will be recalculated automatically based on the new dates.
+                    </p>
+                </div>
+                <div class="modal-footer" style="border-top:1px solid var(--eh-border);">
+                    <button type="button" class="btn btn-sm px-4"
+                            style="border:1px solid var(--eh-border);" data-bs-dismiss="modal">Discard</button>
+                    <button type="submit" class="btn btn-navy btn-sm px-4">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function openEdit(id, name, email, phone, start, end) {
+            document.getElementById('editModalId').textContent = '#' + id;
+            document.getElementById('editBookingId').value    = id;
+            document.getElementById('editCustomerName').value  = name;
+            document.getElementById('editCustomerEmail').value = email;
+            document.getElementById('editCustomerPhone').value = phone;
+            document.getElementById('editStartDate').value     = start;
+            document.getElementById('editEndDate').value       = end;
+            new bootstrap.Modal(document.getElementById('editModal')).show();
+        }
+    </script>
+}

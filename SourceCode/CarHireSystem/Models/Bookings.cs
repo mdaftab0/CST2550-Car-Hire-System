@@ -34,6 +34,17 @@ public class Booking
         TotalCost = days * pricePerDay;
     }
 
+    public void UpdateTerms(DateTime start, DateTime end, string name, string phone, decimal pricePerDay)
+    {
+        StartDate    = start;
+        EndDate      = end;
+        CustomerName = name;
+        CustomerPhone = phone;
+        int days = (end - start).Days;
+        if (days <= 0) days = 1;
+        TotalCost = days * pricePerDay;
+    }
+
     public override string ToString() =>
         $"Booking #{BookingID} [Car: {CarID}] - {CustomerName} | {StartDate:yyyy-MM-dd} to {EndDate:yyyy-MM-dd} | Total: ${TotalCost:F2}";
 }
