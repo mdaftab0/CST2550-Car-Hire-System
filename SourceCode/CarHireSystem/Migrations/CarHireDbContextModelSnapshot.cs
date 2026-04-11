@@ -99,6 +99,9 @@ namespace CarHireSystem.Migrations
                     b.Property<bool>("Booked")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsCancelled")
+                        .HasColumnType("bit");
+
                     b.Property<int>("CarID")
                         .HasColumnType("int");
 

@@ -31,7 +31,7 @@ public class ProfitsModel : PageModel
 
         var today = DateTime.UtcNow.Date;
 
-        var allBookings = await _db.Bookings.ToListAsync();
+        var allBookings = await _db.Bookings.Where(b => !b.IsCancelled).ToListAsync();
 
         if (Period == "lifetime")
         {

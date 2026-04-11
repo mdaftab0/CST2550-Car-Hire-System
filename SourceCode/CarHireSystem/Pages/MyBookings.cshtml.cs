@@ -62,7 +62,8 @@ public class MyBookingsModel : PageModel
             return Page();
         }
 
-        booking.IsActive = false;
+        booking.IsActive    = false;
+        booking.IsCancelled = true;
 
         var dbCar = await _db.Cars.FindAsync(booking.CarID);
         if (dbCar != null)
@@ -73,7 +74,10 @@ public class MyBookingsModel : PageModel
         // Sync HashTable
         var htBooking = _bookingService.GetBooking(CancelBookingId);
         if (htBooking != null)
-            htBooking.IsActive = false;
+        {
+            htBooking.IsActive    = false;
+            htBooking.IsCancelled = true;
+        }
 
         // Sync BST car
         var bstCars = _bst.SearchByPriceRange(0, decimal.MaxValue);
