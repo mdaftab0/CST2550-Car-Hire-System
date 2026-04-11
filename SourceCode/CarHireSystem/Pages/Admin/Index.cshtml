@@ -2,6 +2,9 @@
 @model CarHireSystem.Pages.Admin.IndexModel
 @{
     ViewData["Title"] = "Admin Dashboard";
+    var utilisationColour = Model.Utilisation >= 80 ? "#16a34a"
+                          : Model.Utilisation >= 40 ? "#d97706"
+                          : "var(--eh-navy)";
 }
 
 <div class="section-hero">
@@ -13,30 +16,50 @@
 
 <div class="container">
 
-    <!-- Stat cards -->
-    <div class="row g-4 mb-5">
-        <div class="col-md-3">
+    <!-- Stat cards — row 1 -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
             <div class="card p-4 text-center" style="border-top: 3px solid var(--eh-navy);">
                 <div class="fw-bold mb-1" style="font-size:2.2rem; color:var(--eh-navy)">@Model.TotalCars</div>
                 <div class="text-muted" style="font-size:0.9rem">Total Cars</div>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-4">
             <div class="card p-4 text-center" style="border-top: 3px solid #16a34a;">
                 <div class="fw-bold mb-1" style="font-size:2.2rem; color:#16a34a">@Model.AvailableCars</div>
                 <div class="text-muted" style="font-size:0.9rem">Available Cars</div>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-4">
+            <div class="card p-4 text-center" style="border-top: 3px solid @utilisationColour;">
+                <div class="fw-bold mb-1" style="font-size:2.2rem; color:@utilisationColour">@Model.Utilisation%</div>
+                <div class="text-muted mb-2" style="font-size:0.9rem">Fleet Utilisation</div>
+                <!-- Progress bar -->
+                <div style="background:#e2e8f0; border-radius:99px; height:6px; overflow:hidden;">
+                    <div style="background:@utilisationColour; width:@Model.Utilisation%; height:100%; border-radius:99px; transition:width 0.4s;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stat cards — row 2 -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
             <div class="card p-4 text-center" style="border-top: 3px solid var(--eh-navy);">
                 <div class="fw-bold mb-1" style="font-size:2.2rem; color:var(--eh-navy)">@Model.TotalBookings</div>
                 <div class="text-muted" style="font-size:0.9rem">Total Bookings</div>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-4">
             <div class="card p-4 text-center" style="border-top: 3px solid #d97706;">
                 <div class="fw-bold mb-1" style="font-size:2.2rem; color:#d97706">@Model.ActiveBookings</div>
                 <div class="text-muted" style="font-size:0.9rem">Active Bookings</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card p-4 text-center" style="border-top: 3px solid #16a34a;">
+                <div class="fw-bold mb-1" style="font-size:2.2rem; color:#16a34a">£@Model.RevenueThisMonth.ToString("N0")</div>
+                <div class="text-muted" style="font-size:0.9rem">Revenue (Last 30 Days)</div>
             </div>
         </div>
     </div>

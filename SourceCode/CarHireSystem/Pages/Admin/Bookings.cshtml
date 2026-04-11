@@ -29,7 +29,11 @@
     <div class="card p-0 overflow-hidden">
         <div class="p-4 border-bottom d-flex justify-content-between align-items-center"
              style="border-color:var(--eh-border)!important">
-            <h5 class="fw-semibold mb-0">@Model.Bookings.Length booking(s)</h5>
+            <h5 class="fw-semibold mb-0">@Model.TotalCount booking(s)</h5>
+            @if (Model.TotalPages > 1)
+            {
+                <span class="text-muted" style="font-size:0.85rem">Page @Model.PageNumber of @Model.TotalPages</span>
+            }
         </div>
 
         @if (Model.Bookings.Length == 0)
@@ -121,6 +125,54 @@
             </div>
         }
     </div>
+
+    @if (Model.TotalPages > 1)
+    {
+        <nav class="mt-4 d-flex justify-content-center">
+            <ul class="pagination mb-0" style="gap:4px; list-style:none; display:flex; padding:0;">
+                <li>
+                    @if (Model.PageNumber > 1)
+                    {
+                        <a asp-page="/Admin/Bookings" asp-route-pageNumber="@(Model.PageNumber - 1)"
+                           class="btn btn-sm px-3" style="border:1px solid var(--eh-border);">&lsaquo; Prev</a>
+                    }
+                    else
+                    {
+                        <span class="btn btn-sm px-3 disabled" style="border:1px solid var(--eh-border); opacity:0.4;">&lsaquo; Prev</span>
+                    }
+                </li>
+
+                @for (int p = 1; p <= Model.TotalPages; p++)
+                {
+                    if (p == Model.PageNumber)
+                    {
+                        <li><span class="btn btn-sm btn-navy px-3" style="pointer-events:none;">@p</span></li>
+                    }
+                    else if (p == 1 || p == Model.TotalPages || Math.Abs(p - Model.PageNumber) <= 2)
+                    {
+                        <li><a asp-page="/Admin/Bookings" asp-route-pageNumber="@p"
+                               class="btn btn-sm px-3" style="border:1px solid var(--eh-border);">@p</a></li>
+                    }
+                    else if (Math.Abs(p - Model.PageNumber) == 3)
+                    {
+                        <li><span class="btn btn-sm px-2 disabled" style="border:none; opacity:0.5;">…</span></li>
+                    }
+                }
+
+                <li>
+                    @if (Model.PageNumber < Model.TotalPages)
+                    {
+                        <a asp-page="/Admin/Bookings" asp-route-pageNumber="@(Model.PageNumber + 1)"
+                           class="btn btn-sm px-3" style="border:1px solid var(--eh-border);">Next &rsaquo;</a>
+                    }
+                    else
+                    {
+                        <span class="btn btn-sm px-3 disabled" style="border:1px solid var(--eh-border); opacity:0.4;">Next &rsaquo;</span>
+                    }
+                </li>
+            </ul>
+        </nav>
+    }
 
 </div>
 

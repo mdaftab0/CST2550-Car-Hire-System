@@ -23,10 +23,16 @@ public class BookingsModel : PageModel
         _bst = bst;
     }
 
+    private const int PageSize = 20;
+
     public Booking[] Bookings { get; set; } = Array.Empty<Booking>();
     public Car[] Cars { get; set; } = Array.Empty<Car>();
     public string? SuccessMessage { get; set; }
     public string? ErrorMessage { get; set; }
+    public int TotalCount { get; set; }
+    public int TotalPages { get; set; }
+
+    [BindProperty(SupportsGet = true)] public int PageNumber { get; set; } = 1;
 
     // Cancel
     [BindProperty] public int CancelBookingId { get; set; }
@@ -123,7 +129,18 @@ public class BookingsModel : PageModel
 
     private async Task LoadAsync()
     {
-        Bookings = await _db.Bookings.OrderByDescending(b => b.BookingID).ToArrayAsync();
-        Cars     = await _db.Cars.ToArrayAsync();
+        if (PageNumber < 1) PageNumber = 1;
+
+        TotalCount = await _db.Bookings.CountAsync();
+        TotalPages = (int)Math.Ceiling(TotalCount / (double)PageSize);
+        if (PageNumber > TotalPages && TotalPages > 0) PageNumber = TotalPages;
+
+        Bookings = await _db.Bookings
+            .OrderByDescending(b => b.BookingID)
+            .Skip((PageNumber - 1) * PageSize)
+            .Take(PageSize)
+            .ToArrayAsync();
+
+        Cars = await _db.Cars.ToArrayAsync();
     }
 }
