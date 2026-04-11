@@ -42,7 +42,8 @@
                         <tr>
                             <th class="px-4 py-3">Booking ID</th>
                             <th class="py-3">Car</th>
-                            <th class="py-3">Dates</th>
+                            <th class="py-3">Pick-up</th>
+                            <th class="py-3">Return By</th>
                             <th class="py-3">Total</th>
                             <th class="py-3">Status</th>
                             <th class="py-3">Actions</th>
@@ -67,8 +68,32 @@
                                     }
                                 </td>
                                 <td class="py-3">
-                                    @booking.StartDate.ToString("dd MMM yyyy")<br/>
-                                    <span class="text-muted" style="font-size:0.8rem;">to @booking.EndDate.ToString("dd MMM yyyy")</span>
+                                    @booking.StartDate.ToString("dd MMM yyyy")
+                                </td>
+                                <td class="py-3">
+                                    @{
+                                        var daysLeft = (int)(booking.EndDate.Date - DateTime.UtcNow.Date).TotalDays;
+                                    }
+                                    <span class="fw-semibold">@booking.EndDate.ToString("dd MMM yyyy")</span>
+                                    @if (booking.IsActive && !booking.IsCancelled)
+                                    {
+                                        if (daysLeft < 0)
+                                        {
+                                            <br/><span style="background:#fee2e2; color:#991b1b; padding:2px 8px; border-radius:20px; font-size:0.72rem; font-weight:600;">Overdue</span>
+                                        }
+                                        else if (daysLeft == 0)
+                                        {
+                                            <br/><span style="background:#fef3c7; color:#92400e; padding:2px 8px; border-radius:20px; font-size:0.72rem; font-weight:600;">Due today</span>
+                                        }
+                                        else if (daysLeft <= 2)
+                                        {
+                                            <br/><span style="background:#fef3c7; color:#92400e; padding:2px 8px; border-radius:20px; font-size:0.72rem; font-weight:600;">@daysLeft day@(daysLeft == 1 ? "" : "s") left</span>
+                                        }
+                                        else
+                                        {
+                                            <br/><span class="text-muted" style="font-size:0.78rem;">@daysLeft days left</span>
+                                        }
+                                    }
                                 </td>
                                 <td class="py-3 price-accent">£@booking.TotalCost.ToString("N2")</td>
                                 <td class="py-3">
