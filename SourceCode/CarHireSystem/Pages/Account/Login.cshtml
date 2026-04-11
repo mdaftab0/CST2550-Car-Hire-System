@@ -57,10 +57,13 @@
                         <input type="password" name="Password" class="form-control" placeholder="••••••••"
                                autocomplete="current-password" />
                     </div>
-                    <div class="mb-4 form-check">
-                        <input type="checkbox" name="RememberMe" class="form-check-input" id="rememberMe"
-                               @(Model.RememberMe ? "checked" : "") />
-                        <label class="form-check-label" for="rememberMe" style="color:var(--eh-navy)">Remember me</label>
+                    <div class="mb-3 d-flex justify-content-between align-items-center">
+                        <div class="form-check mb-0">
+                            <input type="checkbox" name="RememberMe" class="form-check-input" id="rememberMe"
+                                   @(Model.RememberMe ? "checked" : "") />
+                            <label class="form-check-label" for="rememberMe" style="color:var(--eh-navy)">Remember me</label>
+                        </div>
+                        <a asp-page="/Account/ForgotPassword" style="font-size:0.85rem; color:var(--eh-navy);">Forgot password?</a>
                     </div>
                     <button type="submit" class="btn btn-navy w-100 py-2">Sign In</button>
                 </form>
